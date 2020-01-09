@@ -7,13 +7,18 @@
 
 package frc.robot
 
-import frc.robot.commands.ExampleCommand
-import frc.robot.subsystems.ExampleSubsystem
+import frc.robot.commands.*
+import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.GenericHID
-import edu.wpi.first.wpilibj.XboxController
+import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj.SpeedControllerGroup
+import edu.wpi.first.wpilibj.drive.DifferentialDrive
+
+import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.can.*
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -29,6 +34,20 @@ class RobotContainer {
 
   var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
 
+  /** --- setup drivetrain --- **/
+  val motorFrontLeft =  WPI_TalonSRX(0)
+  val motorBackLeft =   WPI_TalonSRX(1)
+  val motorFrontRight = WPI_TalonSRX(2)
+  val motorBackRight =  WPI_TalonSRX(3)
+
+  /* keep speeds same on motors on each side */
+  val motorsLeft = SpeedControllerGroup(motorFrontLeft, motorBackLeft)
+  val motorsRight = SpeedControllerGroup(motorFrontRight, motorBackRight)
+
+  val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight))
+
+  val joystickDriveCommand = JoystickDrive(drivetrain, Joystick(0))
+
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -36,6 +55,7 @@ class RobotContainer {
   init {
     // Configure the button bindings
     configureButtonBindings()
+    configureDefaultCommands()
     m_autoCommandChooser.setDefaultOption("Default Auto", m_autoCommand)
     SmartDashboard.putData("Auto mode", m_autoCommandChooser)
   }
@@ -48,6 +68,15 @@ class RobotContainer {
    */
   fun configureButtonBindings() {
   }
+
+  /**
+   * Set default commands for each subsystem
+   * They will be run if no other commands are sheduled that have a dependency on that subsystem
+   */
+  fun configureDefaultCommands() {
+    drivetrain.setDefaultCommand(joystickDriveCommand);
+  }
+
 
   fun getAutonomousCommand(): Command {
     // Return the selected command
