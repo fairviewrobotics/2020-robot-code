@@ -19,5 +19,12 @@ class Constants {
   companion object {
     // Put Constants inside the companion object to make them globally accessible.
     // ex. val motorPort: Int = 0
+    val Drive_Kp: Double = 1.0;
+    val Drive_Ki: Double = 0.0;
+    val Drive_Kd: Double = 0.0;
+    val dpp: Double = 1.0;
+    val kToleranceRPS: Double = 1.0;
+    val kTargetRPS: Double = 2.0;
+    val Drive_KTolerance_Deg: Double = 2.0;
   }
 }
