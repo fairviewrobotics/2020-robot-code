@@ -14,7 +14,7 @@ class DrivetrainSubsystem(val drivetrain: DifferentialDrive) : SubsystemBase() {
     }
 
     /* simple drive */
-    fun driveArcade(forwardSpeed: Double, turnSpeed: Double) {
-        drivetrain.arcadeDrive(forwardSpeed, turnSpeed)
+    fun driveArcade(forwardSpeed: Double, turnSpeed: Double, squareInputs: Boolean = false) {
+        drivetrain.arcadeDrive(forwardSpeed, turnSpeed, squareInputs)
     }
 }
