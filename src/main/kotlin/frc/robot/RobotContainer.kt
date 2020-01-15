@@ -35,9 +35,9 @@ class RobotContainer {
   var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
 
   /** --- setup drivetrain --- **/
-  val motorFrontLeft =  WPI_TalonSRX(0)
+  val motorFrontLeft =  WPI_TalonSRX(2)
   val motorBackLeft =   WPI_TalonSRX(1)
-  val motorFrontRight = WPI_TalonSRX(2)
+  val motorFrontRight = WPI_TalonSRX(4)
   val motorBackRight =  WPI_TalonSRX(3)
 
   /* keep speeds same on motors on each side */
