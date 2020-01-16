@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.*
+import com.kauailabs.navx.frc.AHRS
+import edu.wpi.first.wpilibj2.command.button.JoystickButton
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -34,6 +36,8 @@ class RobotContainer {
 
   var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
 
+  val joystick0 = Joystick(0)
+
   /** --- setup drivetrain --- **/
   val motorFrontLeft =  WPI_TalonSRX(2)
   val motorBackLeft =   WPI_TalonSRX(1)
@@ -44,9 +48,11 @@ class RobotContainer {
   val motorsLeft = SpeedControllerGroup(motorFrontLeft, motorBackLeft)
   val motorsRight = SpeedControllerGroup(motorFrontRight, motorBackRight)
 
-  val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight))
+  val gyro = AHRS()
 
-  val joystickDriveCommand = JoystickDrive(drivetrain, Joystick(0))
+  val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
+
+  val joystickDriveCommand = JoystickDrive(drivetrain, joystick0)
 
 
   /**
@@ -67,6 +73,9 @@ class RobotContainer {
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   fun configureButtonBindings() {
+    val alignButton = JoystickButton(joystick0, 3)
+
+    alignButton.whenPressed(TurnToAngle(drivetrain, 90.0))
   }
 
   /**
