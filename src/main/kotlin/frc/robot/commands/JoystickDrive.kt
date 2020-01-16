@@ -21,10 +21,11 @@ class JoystickDrive(val driveSubsystem: DrivetrainSubsystem, val joystick: Joyst
 
     override fun execute() {
         driveSubsystem.driveArcade(joystick.getY(), joystick.getX())
+        println(driveSubsystem.getAngle())
     }
 
     override fun end(interrupted: Boolean) {
-        driveSubsystem.driveArcade(0.0, 0.0)
+        driveSubsystem.driveArcade(0.0, 0.0, true)
     }
 
     override fun isFinished() = false
