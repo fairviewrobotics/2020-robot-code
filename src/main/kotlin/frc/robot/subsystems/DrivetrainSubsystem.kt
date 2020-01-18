@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Encoder
  * Drivetrain subsystem
  * TODO: add gyro and encoder handling
  */
-class DrivetrainSubsystem(val drivetrain: DifferentialDrive, val gyroscope: AHRS, val encoderL: Encoder, val encoderR: Encoder) : SubsystemBase() {
+class DrivetrainSubsystem(val drivetrain: DifferentialDrive, val gyroscope: AHRS) : SubsystemBase() {
     /* default command (don't drive) */
     override fun periodic() {
         drivetrain.arcadeDrive(0.0, 0.0)
@@ -20,17 +20,17 @@ class DrivetrainSubsystem(val drivetrain: DifferentialDrive, val gyroscope: AHRS
         return gyroscope.getAngle()
     }
 
-    fun getLSpeed(): Double{
-        return encoderL.getRate()
-    }
+    //fun getLSpeed(): Double{
+    //    return encoderL.getRate()
+    //}
 
-    fun getRSpeed():Double{
-        return encoderR.getRate()
-    }
+    //fun getRSpeed():Double{
+    //    return encoderR.getRate()
+    //}
 
-    fun getOverallSpeed():Double{
-        return (encoderR.getRate()+encoderL.getRate())/2
-    }
+    //fun getOverallSpeed():Double{
+    //    return (encoderR.getRate()+encoderL.getRate())/2
+    //}
 
     /* return true if gyroscope is connected (gyro commands exit if it is not */
     fun gyroUp(): Boolean {
