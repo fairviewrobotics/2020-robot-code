@@ -14,24 +14,23 @@ import edu.wpi.first.wpilibj.controller.PIDController
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward
 import edu.wpi.first.wpilibj.Encoder
 import frc.robot.Constants
+import com.kauailabs.navx.frc.AHRS
 
-class testPidSubsystem(val drivetrain: DifferentialDrive, val encoder: Encoder, val smff: SimpleMotorFeedforward) : PIDSubsystem(PIDController(Constants.Kp, Constants.Ki, Constants.Kd)) {
+class testPidSubsystem(val drivetrain: DifferentialDrive, val angle: Double, val smff: SimpleMotorFeedforward, val gyro: AHRS) : PIDSubsystem(PIDController(Constants.subsysP, Constants.subsysI, Constants.subsysD)) {
   /**
    * Creates a new ExampleSubsystem.
    */
-
     init{
-        encoder.setDistancePerPulse(Constants.dpp)
-        setSetpoint(Constants.kTargetRPS)
-        controller.setTolerance(Constants.kToleranceRPS)
+        setSetpoint(angle)
+        getController().enableContinuousInput(-180.0,180.0)
+        getController().setTolerance(Constants.TurnToAngleleranceDeg,Constants.TurnToAngleRateToleranceDegPerS)
     }
-
   /**
    * Will be called periodically whenever the CommandScheduler runs.
    */
 
   override fun getMeasurement(): Double {
-      return encoder.getRate();
+      return gyro.getAngle();
   }
   
   override fun useOutput(output:Double, setpoint:Double) {
@@ -39,11 +38,19 @@ class testPidSubsystem(val drivetrain: DifferentialDrive, val encoder: Encoder, 
   }
 
   fun atSetpoint(): Boolean{
-      return controller.atSetpoint() // controller is what?   
+      return getController().atSetpoint() // controller is what?   
   }
 
+  fun gyroUp(): Boolean{
+    return gyro.isConnected()
+  }
   fun stopDrivetrain() {
       drivetrain.arcadeDrive(0.0,0.0)
   }
+
+  fun driveArcade(forwardSpeed: Double, turnSpeed: Double, squareInputs: Boolean = false) {
+    drivetrain.arcadeDrive(forwardSpeed, turnSpeed, squareInputs)
+  }
+
 
 }

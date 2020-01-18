@@ -28,5 +28,9 @@ class Constants {
 
     val TurnToAngleleranceDeg = 2.0
     val TurnToAngleRateToleranceDegPerS = 1.0
+
+    val subsysP = 0.03
+    val subsysI = 0.0
+    val subsysD = 0.0
   }
 }
