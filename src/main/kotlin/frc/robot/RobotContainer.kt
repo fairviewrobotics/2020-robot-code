@@ -21,7 +21,11 @@ import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.*
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.networktables.NetworkTableEntry
+import edu.wpi.first.networktables.EntryNotification
+import edu.wpi.first.networktables.EntryListenerFlags
+import edu.wpi.first.networktables.NetworkTableInstance
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -54,6 +58,15 @@ class RobotContainer {
 
   val joystickDriveCommand = JoystickDrive(drivetrain, joystick0)
 
+  val main = Shuffleboard.getTab("Main") // TODO: Rename this sometime.
+  val knockout = Shuffleboard.getTab("Auto mode")
+  var speed = 0 // leo: for a worthless experiment :)
+
+  var knockFrontLeft: NetworkTableEntry = knockout.add("Knockout FrontLeft",false).withWidget("Toggle Button").getEntry()
+  var knockBackLeft: NetworkTableEntry = knockout.add("Knockout BackLeft",false).withWidget("Toggle Button").getEntry()
+  var knockFrontRight: NetworkTableEntry = knockout.add("Knockout FrontRight",false).withWidget("Toggle Button").getEntry()
+  var knockBackRight: NetworkTableEntry = knockout.add("Knockout BackRight",false).withWidget("Toggle Button").getEntry()
+
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -63,7 +76,10 @@ class RobotContainer {
     configureButtonBindings()
     configureDefaultCommands()
     m_autoCommandChooser.setDefaultOption("Default Auto", m_autoCommand)
-    SmartDashboard.putData("Auto mode", m_autoCommandChooser)
+    Shuffleboard.selectTab("Main")
+    main.add("Auto mode", m_autoCommandChooser)
+    
+    
   }
 
   /**
@@ -76,6 +92,37 @@ class RobotContainer {
     val alignButton = JoystickButton(joystick0, 3)
 
     alignButton.whenPressed(TurnToAngle(drivetrain, 90.0))
+    
+    // Knockout stuff
+    knockFrontLeft.addListener({event ->
+       if(knockFrontLeft.getBoolean(false)) {
+         motorFrontLeft.disable()
+       }
+       
+      }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
+    
+    knockFrontRight.addListener({event ->
+        if(knockFrontRight.getBoolean(false)){
+          motorFrontRight.disable()
+        }
+       }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
+    
+    knockBackLeft.addListener({event ->
+        if(knockBackLeft.getBoolean(false)){
+          motorBackLeft.disable()
+        }
+       }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
+    
+    knockBackRight.addListener({event ->
+        if(knockBackRight.getBoolean(false)){
+          motorBackRight.disable()
+        }
+       }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
+    //val shiftUpButton = JoystickButton(joystick0, 2)
+    //val shiftDownButton = JoystickButton(joystick0, 4)
+
+    //shiftUpButton.whenPressed(speed++10)
+    //shiftDownButton.whenPressed(speed--10)
   }
 
   /**
