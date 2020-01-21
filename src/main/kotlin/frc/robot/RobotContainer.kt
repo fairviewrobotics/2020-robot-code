@@ -12,14 +12,13 @@ import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.SpeedControllerGroup
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 
-import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.*
 import com.kauailabs.navx.frc.AHRS
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 
 /**
@@ -30,17 +29,14 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton
  */
 class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private val m_exampleSubsystem: ExampleSubsystem = ExampleSubsystem()
-
-  val m_autoCommand: ExampleCommand = ExampleCommand(m_exampleSubsystem)
 
   var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
 
   val joystick0 = Joystick(0)
 
   /** --- setup drivetrain --- **/
-  val motorFrontLeft =  WPI_TalonSRX(2)
-  val motorBackLeft =   WPI_TalonSRX(1)
+  val motorFrontLeft =  WPI_TalonSRX(1)
+  val motorBackLeft =   WPI_TalonSRX(2)
   val motorFrontRight = WPI_TalonSRX(4)
   val motorBackRight =  WPI_TalonSRX(3)
 
@@ -52,7 +48,31 @@ class RobotContainer {
 
   val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
 
+  /*** --- commands --- ***/
+  //drive by a joystick
   val joystickDriveCommand = JoystickDrive(drivetrain, joystick0)
+
+  /** -- 0 point autos -- **/
+  val noAuto = DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.0 })
+
+  /** --- 5 point autos --- **/
+  //backup simple auto
+  val backupAuto = DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(2.0)
+  //forward simple auto
+  val forwardAuto = DriveDoubleSupplier(drivetrain, { -0.3 }, { 0.0 }).withTimeout(2.0)
+
+  //backup and SPIN!! (looking cool is basically the same thing as winning)
+  val spinAuto = SequentialCommandGroup(
+          DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(2.0),
+          DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.8 }).withTimeout(12.0)
+  )
+
+  /** -- more than 5 point autos (hopefully) -- **/
+  // power port vision
+  val visionHighGoalCommand = VisionHighGoal(drivetrain, -0.3)
+
+  /* for testing PID loops */
+  val turnToAngleCommand = TurnToAngle(drivetrain, 90.0, 0.0)
 
 
   /**
@@ -62,7 +82,14 @@ class RobotContainer {
     // Configure the button bindings
     configureButtonBindings()
     configureDefaultCommands()
-    m_autoCommandChooser.setDefaultOption("Default Auto", m_autoCommand)
+    /* set options for autonomous */
+    m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionHighGoalCommand)
+    m_autoCommandChooser.addOption("Backup 2s Autonomous", backupAuto)
+    m_autoCommandChooser.addOption("Forward 2s Autonomous", forwardAuto)
+    m_autoCommandChooser.addOption("Backup 2s and Look Cool Autonomous", spinAuto)
+    m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
+
+
     SmartDashboard.putData("Auto mode", m_autoCommandChooser)
   }
 
@@ -72,10 +99,21 @@ class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling passing it to a
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
+
   fun configureButtonBindings() {
     val alignButton = JoystickButton(joystick0, 3)
+    val turnButton = JoystickButton(joystick0, 4)
+    /**
+     * TODO: when the vision button is pressed, run a sequential group of commands
+     * 1. Drive towards target till it can be seen (DONE)
+     * 2. Drive forwards for ~0.5 seconds
+     * 3. Shoot
+     */
+    alignButton.whenPressed(visionHighGoalCommand)
 
-    alignButton.whenPressed(TurnToAngle(drivetrain, 90.0))
+    turnButton.whenPressed(turnToAngleCommand)
+
+    /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
   }
 
   /**
@@ -83,7 +121,7 @@ class RobotContainer {
    * They will be run if no other commands are sheduled that have a dependency on that subsystem
    */
   fun configureDefaultCommands() {
-    drivetrain.setDefaultCommand(joystickDriveCommand);
+    drivetrain.setDefaultCommand(joystickDriveCommand)
   }
 
 

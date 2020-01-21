@@ -7,7 +7,6 @@
 
 package frc.robot
 
-import frc.robot.vision.*
 import frc.robot.commands.*
 import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.Command
@@ -17,10 +16,12 @@ import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.SpeedControllerGroup
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
+import edu.wpi.first.networktables.*
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.*
 import com.kauailabs.navx.frc.AHRS
+import edu.wpi.first.wpilibj2.command.Subsystem
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 
 /**
@@ -40,8 +41,8 @@ class RobotContainer {
   val joystick0 = Joystick(0)
 
   /** --- setup drivetrain --- **/
-  val motorFrontLeft =  WPI_TalonSRX(2)
-  val motorBackLeft =   WPI_TalonSRX(1)
+  val motorFrontLeft =  WPI_TalonSRX(1)
+  val motorBackLeft =   WPI_TalonSRX(2)
   val motorFrontRight = WPI_TalonSRX(4)
   val motorBackRight =  WPI_TalonSRX(3)
 
@@ -55,9 +56,6 @@ class RobotContainer {
 
   val joystickDriveCommand = JoystickDrive(drivetrain, joystick0)
 
-  /** -- setup camera subsystem **/
-  val camera = Streaming()
-
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -68,8 +66,6 @@ class RobotContainer {
     configureDefaultCommands()
     m_autoCommandChooser.setDefaultOption("Default Auto", m_autoCommand)
     SmartDashboard.putData("Auto mode", m_autoCommandChooser)
-
-    camera.start()
   }
 
   /**
@@ -78,10 +74,36 @@ class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling passing it to a
    * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
+
+  fun visionFunc() {
+    val ntInst = NetworkTableInstance.getDefault()
+    val table = ntInst.getTable("high-vision")
+    val yaw = table.getEntry("yaw").getDouble(0.0)
+    val isTarget = table.getEntry("isTarget").getBoolean(false)
+
+
+
+    val curAngle = drivetrain.getAngle()
+
+    TurnToAngle(drivetrain, curAngle + Math.toDegrees(yaw)).schedule()
+
+    return
+
+  }
+
   fun configureButtonBindings() {
     val alignButton = JoystickButton(joystick0, 3)
+    val turnButton = JoystickButton(joystick0, 4)
 
-    alignButton.whenPressed(TurnToAngle(drivetrain, 90.0))
+
+    alignButton.whenHeld {
+      /* get current vision angle */
+      visionFunc()
+
+      mutableSetOf<Subsystem>()
+    }
+    turnButton.whenPressed(TurnToAngle(drivetrain, 90.0))
+
   }
 
   /**

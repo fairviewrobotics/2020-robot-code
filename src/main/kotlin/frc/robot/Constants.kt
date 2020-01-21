@@ -22,11 +22,12 @@ class Constants {
     // Put Constants inside the companion object to make them globally accessible.
     // ex. val motorPort: Int = 0
 
-    val TurnToAngleP = 0.03
-    val TurnToAngleI = 0.0
-    val TurnToAngleD = 0.01
+    val DrivetrainPID_P = 0.035
+    val DrivetrainPID_I = 0.0
+    val DrivetrainPID_D = 0.005
+    val DrivetrainPID_AngleToleranceDeg = 2.0
+    val DrivetrainPID_AngleRateToleranceDegPerS = 1.0
 
-    val TurnToAngleleranceDeg = 2.0
-    val TurnToAngleRateToleranceDegPerS = 1.0
+
   }
 }
