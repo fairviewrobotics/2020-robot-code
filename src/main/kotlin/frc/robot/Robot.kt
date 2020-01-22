@@ -21,6 +21,7 @@ class Robot : TimedRobot() {
   lateinit var m_autonomousCommand: Command
 
   lateinit var m_robotContainer: RobotContainer
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.

@@ -26,17 +26,7 @@ class Constants {
     val TurnToAngleI = 0.0
     val TurnToAngleD = 0.01
 
-    val TarSpeedP = 0.03
-    val TarSpeedI = 0.0
-    val TarSpeedD = 0.0
-    val TarSpeedleranceDeg = 2.0
-    val TarSpeedToleranceDegPerS = 1.0
-
     val TurnToAngleleranceDeg = 2.0
     val TurnToAngleRateToleranceDegPerS = 1.0
-
-    val subsysP = 0.03
-    val subsysI = 0.0
-    val subsysD = 0.0
   }
 }
