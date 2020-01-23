@@ -20,7 +20,11 @@ import com.ctre.phoenix.motorcontrol.can.*
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.networktables.NetworkTableEntry
+import edu.wpi.first.networktables.EntryNotification
+import edu.wpi.first.networktables.EntryListenerFlags
+import edu.wpi.first.networktables.NetworkTableInstance
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -64,16 +68,18 @@ class RobotContainer {
   //backup and SPIN!! (looking cool is basically the same thing as winning)
   val spinAuto = SequentialCommandGroup(
           DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(2.0),
-          DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.8 }).withTimeout(12.0)
+          DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.5 }).withTimeout(12.0)
   )
 
   /** -- more than 5 point autos (hopefully) -- **/
   // power port vision
-  val visionHighGoalCommand = VisionHighGoal(drivetrain, -0.3)
+  val visionHighGoalCommand = SequentialCommandGroup(
+          VisionHighGoal(drivetrain, -0.3),
+          DriveDoubleSupplier(drivetrain, { -0.3 }, { 0.0 }).withTimeout(0.5)
+  )
 
   /* for testing PID loops */
   val turnToAngleCommand = TurnToAngle(drivetrain, 90.0, 0.0)
-
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -89,8 +95,9 @@ class RobotContainer {
     m_autoCommandChooser.addOption("Backup 2s and Look Cool Autonomous", spinAuto)
     m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
 
-
     SmartDashboard.putData("Auto mode", m_autoCommandChooser)
+
+    Constants.loadConstants()
   }
 
   /**
@@ -102,6 +109,7 @@ class RobotContainer {
 
   fun configureButtonBindings() {
     val alignButton = JoystickButton(joystick0, 3)
+
     val turnButton = JoystickButton(joystick0, 4)
     /**
      * TODO: when the vision button is pressed, run a sequential group of commands
@@ -114,6 +122,7 @@ class RobotContainer {
     turnButton.whenPressed(turnToAngleCommand)
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
+
   }
 
   /**

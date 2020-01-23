@@ -6,7 +6,11 @@ import edu.wpi.first.wpilibj2.command.PIDCommand
 import frc.robot.Constants
 
 class TurnToAngle(val driveSubsystem: DrivetrainSubsystem, targetAngle: Double, forwardSpeed: Double): PIDCommand(
-        PIDController(Constants.DrivetrainPID_P, Constants.DrivetrainPID_I, Constants.DrivetrainPID_D),
+        PIDController(
+                Constants.constants["DrivetrainPID_P"] ?: 0.035,
+                Constants.constants["DrivetrainPID_I"] ?: 0.0,
+                Constants.constants["DrivetrainPID_D"] ?: 0.005
+        ),
         driveSubsystem::getAngle,
         targetAngle,
         {output: Double -> driveSubsystem.driveArcade(forwardSpeed, output)},
@@ -15,7 +19,20 @@ class TurnToAngle(val driveSubsystem: DrivetrainSubsystem, targetAngle: Double, 
 
     init {
         getController().enableContinuousInput(-180.0, 180.0)
-        getController().setTolerance(Constants.DrivetrainPID_AngleToleranceDeg, Constants.DrivetrainPID_AngleRateToleranceDegPerS)
+        /** reload pid parameters from network tables */
+        setPIDParams()
+    }
+
+    fun setPIDParams() {
+        getController().setTolerance(
+                Constants.constants["DrivetrainPID_AngleToleranceDeg"] ?: 2.0,
+                Constants.constants["DrivetrainPID_AngleRateToleranceDegPerS"] ?: 1.0
+        )
+        getController().setPID(
+                Constants.constants["DrivetrainPID_P"] ?: 0.035,
+                Constants.constants["DrivetrainPID_I"] ?: 0.0,
+                Constants.constants["DrivetrainPID_D"] ?: 0.005
+        )
     }
 
 
