@@ -40,6 +40,7 @@ class VisionHighGoal(val driveSubsystem: DrivetrainSubsystem, forwardSpeed: Doub
         val table = ntInst.getTable("high-vision")
         val yaw = table.getEntry("yaw")
         val isTarget = table.getEntry("isTarget")
+        val targetAtTopImage = table.getEntry("targetAtTopImage")
     }
 
     init {
@@ -68,6 +69,7 @@ class VisionHighGoal(val driveSubsystem: DrivetrainSubsystem, forwardSpeed: Doub
         /* if we can't see a vision target, stop */
         /* TODO: require no vision target for two or three frames before stopping */
         if(!isTarget.getBoolean(false)) return true
+        if(targetAtTopImage.getBoolean(false)) return true
         return false
     }
 
