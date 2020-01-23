@@ -68,25 +68,18 @@ class RobotContainer {
   //backup and SPIN!! (looking cool is basically the same thing as winning)
   val spinAuto = SequentialCommandGroup(
           DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(2.0),
-          DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.8 }).withTimeout(12.0)
+          DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.5 }).withTimeout(12.0)
   )
 
   /** -- more than 5 point autos (hopefully) -- **/
   // power port vision
-  val visionHighGoalCommand = VisionHighGoal(drivetrain, -0.3)
+  val visionHighGoalCommand = SequentialCommandGroup(
+          VisionHighGoal(drivetrain, -0.3),
+          DriveDoubleSupplier(drivetrain, { -0.3 }, { 0.0 }).withTimeout(0.5)
+  )
 
   /* for testing PID loops */
   val turnToAngleCommand = TurnToAngle(drivetrain, 90.0, 0.0)
-
-  val main = Shuffleboard.getTab("Main") // TODO: Rename this sometime.
-  val knockout = Shuffleboard.getTab("Auto mode")
-
-  var knockFrontLeft: NetworkTableEntry = knockout.add("Knockout FrontLeft",false).withWidget("Toggle Button").getEntry()
-  var knockBackLeft: NetworkTableEntry = knockout.add("Knockout BackLeft",false).withWidget("Toggle Button").getEntry()
-  var knockFrontRight: NetworkTableEntry = knockout.add("Knockout FrontRight",false).withWidget("Toggle Button").getEntry()
-  var knockBackRight: NetworkTableEntry = knockout.add("Knockout BackRight",false).withWidget("Toggle Button").getEntry()
-
-
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -103,6 +96,8 @@ class RobotContainer {
     m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
 
     SmartDashboard.putData("Auto mode", m_autoCommandChooser)
+
+    Constants.loadConstants()
   }
 
   /**
@@ -127,33 +122,6 @@ class RobotContainer {
     turnButton.whenPressed(turnToAngleCommand)
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
-
-    // Knockout stuff
-    knockFrontLeft.addListener({event ->
-       if(knockFrontLeft.getBoolean(false)) {
-         motorFrontLeft.disable()
-       }
-       
-      }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
-    
-    knockFrontRight.addListener({event ->
-        if(knockFrontRight.getBoolean(false)){
-          motorFrontRight.disable()
-        }
-       }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
-    
-    knockBackLeft.addListener({event ->
-        if(knockBackLeft.getBoolean(false)){
-          motorBackLeft.disable()
-        }
-       }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
-    
-    knockBackRight.addListener({event ->
-        if(knockBackRight.getBoolean(false)){
-          motorBackRight.disable()
-        }
-       }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
-
 
   }
 
