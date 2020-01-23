@@ -20,7 +20,11 @@ import com.ctre.phoenix.motorcontrol.can.*
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.networktables.NetworkTableEntry
+import edu.wpi.first.networktables.EntryNotification
+import edu.wpi.first.networktables.EntryListenerFlags
+import edu.wpi.first.networktables.NetworkTableInstance
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -74,6 +78,15 @@ class RobotContainer {
   /* for testing PID loops */
   val turnToAngleCommand = TurnToAngle(drivetrain, 90.0, 0.0)
 
+  val main = Shuffleboard.getTab("Main") // TODO: Rename this sometime.
+  val knockout = Shuffleboard.getTab("Auto mode")
+
+  var knockFrontLeft: NetworkTableEntry = knockout.add("Knockout FrontLeft",false).withWidget("Toggle Button").getEntry()
+  var knockBackLeft: NetworkTableEntry = knockout.add("Knockout BackLeft",false).withWidget("Toggle Button").getEntry()
+  var knockFrontRight: NetworkTableEntry = knockout.add("Knockout FrontRight",false).withWidget("Toggle Button").getEntry()
+  var knockBackRight: NetworkTableEntry = knockout.add("Knockout BackRight",false).withWidget("Toggle Button").getEntry()
+
+
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -89,7 +102,6 @@ class RobotContainer {
     m_autoCommandChooser.addOption("Backup 2s and Look Cool Autonomous", spinAuto)
     m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
 
-
     SmartDashboard.putData("Auto mode", m_autoCommandChooser)
   }
 
@@ -102,6 +114,7 @@ class RobotContainer {
 
   fun configureButtonBindings() {
     val alignButton = JoystickButton(joystick0, 3)
+
     val turnButton = JoystickButton(joystick0, 4)
     /**
      * TODO: when the vision button is pressed, run a sequential group of commands
@@ -114,6 +127,34 @@ class RobotContainer {
     turnButton.whenPressed(turnToAngleCommand)
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
+
+    // Knockout stuff
+    knockFrontLeft.addListener({event ->
+       if(knockFrontLeft.getBoolean(false)) {
+         motorFrontLeft.disable()
+       }
+       
+      }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
+    
+    knockFrontRight.addListener({event ->
+        if(knockFrontRight.getBoolean(false)){
+          motorFrontRight.disable()
+        }
+       }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
+    
+    knockBackLeft.addListener({event ->
+        if(knockBackLeft.getBoolean(false)){
+          motorBackLeft.disable()
+        }
+       }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
+    
+    knockBackRight.addListener({event ->
+        if(knockBackRight.getBoolean(false)){
+          motorBackRight.disable()
+        }
+       }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
+
+
   }
 
   /**
