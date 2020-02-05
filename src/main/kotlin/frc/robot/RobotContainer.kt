@@ -20,11 +20,8 @@ import com.ctre.phoenix.motorcontrol.can.*
 import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.networktables.NetworkTableEntry
-import edu.wpi.first.networktables.EntryNotification
-import edu.wpi.first.networktables.EntryListenerFlags
-import edu.wpi.first.networktables.NetworkTableInstance
+import com.revrobotics.CANSparkMax
+import com.revrobotics.CANSparkMaxLowLevel.MotorType
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -39,10 +36,10 @@ class RobotContainer {
   val joystick0 = Joystick(0)
 
   /** --- setup drivetrain --- **/
-  val motorFrontLeft =  WPI_TalonSRX(1)
-  val motorBackLeft =   WPI_TalonSRX(2)
-  val motorFrontRight = WPI_TalonSRX(4)
-  val motorBackRight =  WPI_TalonSRX(3)
+  val motorFrontLeft =  WPI_TalonSRX(5)
+  val motorBackLeft =   WPI_TalonSRX(7)
+  val motorFrontRight = WPI_TalonSRX(8)
+  val motorBackRight =  WPI_TalonSRX(9)
 
   /* keep speeds same on motors on each side */
   val motorsLeft = SpeedControllerGroup(motorFrontLeft, motorBackLeft)
@@ -51,6 +48,10 @@ class RobotContainer {
   val gyro = AHRS()
 
   val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
+  val shooter = ShooterSubsystem(CANSparkMax(10, MotorType.kBrushless))
+  val intake = IntakeSubsystem(WPI_TalonSRX(4))
+  val indexer = IndexerSubsystem(WPI_TalonSRX(2))
+  val gate = GateSubsystem(WPI_TalonSRX(3))
 
   /*** --- commands --- ***/
   //drive by a joystick
@@ -81,6 +82,9 @@ class RobotContainer {
   /* for testing PID loops */
   val turnToAngleCommand = TurnToAngle(drivetrain, 90.0, 0.0)
 
+  /* for running shooter */
+  val shooterCommand = FixedShooterSpeed(shooter, {0.5})
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -108,18 +112,32 @@ class RobotContainer {
    */
 
   fun configureButtonBindings() {
-    val alignButton = JoystickButton(joystick0, 3)
+    val alignButton = JoystickButton(joystick0, 4)
 
-    val turnButton = JoystickButton(joystick0, 4)
+    //val turnButton = JoystickButton(joystick0, 4)
+
+
     /**
      * TODO: when the vision button is pressed, run a sequential group of commands
      * 1. Drive towards target till it can be seen (DONE)
      * 2. Drive forwards for ~0.5 seconds
      * 3. Shoot
      */
-    alignButton.whenPressed(visionHighGoalCommand)
+    //alignButton.whenPressed(visionHighGoalCommand)
 
-    turnButton.whenPressed(turnToAngleCommand)
+    //turnButton.whenPressed(turnToAngleCommand)
+
+    JoystickButton(joystick0, 8).whenHeld(FixedIntakeSpeed(intake, { 0.5 }))
+    JoystickButton(joystick0, 9).whenHeld(FixedIntakeSpeed(intake, { -0.5 }))
+
+    JoystickButton(joystick0, 11).whenHeld(FixedIndexerSpeed(indexer, { 0.3 }))
+    JoystickButton(joystick0, 10).whenHeld(FixedIndexerSpeed(indexer, { -0.3 }))
+
+    JoystickButton(joystick0, 3).whenHeld(FixedGateSpeed(gate, { 0.3 }))
+    JoystickButton(joystick0, 2).whenHeld(FixedGateSpeed(gate, { -0.3 }))
+
+    JoystickButton(joystick0, 5).whenHeld(FixedShooterSpeed(shooter, { 0.5 }))
+
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
 
@@ -131,6 +149,9 @@ class RobotContainer {
    */
   fun configureDefaultCommands() {
     drivetrain.setDefaultCommand(joystickDriveCommand)
+
+    indexer.setDefaultCommand(FixedIndexerSpeed(indexer, {0.0}))
+    gate.setDefaultCommand(FixedGateSpeed(gate, {0.0}))
   }
 
 

@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.commands
 
 import edu.wpi.first.wpilibj.controller.PIDController
@@ -12,21 +5,42 @@ import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.PIDCommand
 import frc.robot.Constants
 
-class TurnToAngle(val driveSubsystem: DrivetrainSubsystem, targetAngle: Double): PIDCommand(
-        PIDController(Constants.TurnToAngleP, Constants.TurnToAngleI, Constants.TurnToAngleD),
+class TurnToAngle(val driveSubsystem: DrivetrainSubsystem, targetAngle: Double, forwardSpeed: Double): PIDCommand(
+        PIDController(
+                Constants.constants["DrivetrainPID_P"] ?: 0.035,
+                Constants.constants["DrivetrainPID_I"] ?: 0.0,
+                Constants.constants["DrivetrainPID_D"] ?: 0.005
+        ),
         driveSubsystem::getAngle,
         targetAngle,
-        {output: Double -> driveSubsystem.driveArcade(0.0, output)},
+        {output: Double -> driveSubsystem.driveArcade(forwardSpeed, output)},
         arrayOf(driveSubsystem)) {
+
 
     init {
         getController().enableContinuousInput(-180.0, 180.0)
-        getController().setTolerance(Constants.TurnToAngleleranceDeg, Constants.TurnToAngleRateToleranceDegPerS)
+        /** reload pid parameters from network tables */
+        setPIDParams()
     }
 
+    fun setPIDParams() {
+        getController().setTolerance(
+                Constants.constants["DrivetrainPID_AngleToleranceDeg"] ?: 2.0,
+                Constants.constants["DrivetrainPID_AngleRateToleranceDegPerS"] ?: 1.0
+        )
+        getController().setPID(
+                Constants.constants["DrivetrainPID_P"] ?: 0.035,
+                Constants.constants["DrivetrainPID_I"] ?: 0.0,
+                Constants.constants["DrivetrainPID_D"] ?: 0.005
+        )
+    }
+
+
     override fun isFinished(): Boolean {
+        println("checking isFinished")
         /* if no gyro, fail */
         if(!driveSubsystem.gyroUp()) return true
+        /* check if we hit setpoint yet */
         return getController().atSetpoint()
     }
 
