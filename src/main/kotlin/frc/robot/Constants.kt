@@ -31,7 +31,8 @@ class Constants {
             "DrivetrainPID_AngleToleranceDeg" to 2.0,
             "DrivetrainPID_AngleRateToleranceDegPerS" to 1.0,
             "DrivetrainSpeedCoeff_Left" to 1.0,
-            "DrivetrainSpeedCoeff_Right" to 1.0
+            "DrivetrainSpeedCoeff_Right" to 1.0,
+            "IntakeBaseSpeed" to 0.0
     )
 
     /** NetworkTables Constants Management **/

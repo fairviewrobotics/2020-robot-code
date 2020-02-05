@@ -9,22 +9,21 @@ package frc.robot.commands
 
 import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.CommandBase
-import edu.wpi.first.wpilibj.Joystick
 
 /**
  * Drive the drivetrain based on a joystick
  */
-class JoystickDrive(val driveSubsystem: DrivetrainSubsystem, val joystick: Joystick) : CommandBase() {
+class FixedShooterSpeed(val shooterSubsystem: ShooterSubsystem, val wheelSpeed: () -> Double) : CommandBase() {
     init {
-        addRequirements(driveSubsystem)
+        addRequirements(shooterSubsystem)
     }
 
     override fun execute() {
-        driveSubsystem.driveArcade(-joystick.getY(), joystick.getX())
+        shooterSubsystem.setSpeed(wheelSpeed())
     }
 
     override fun end(interrupted: Boolean) {
-        driveSubsystem.driveArcade(0.0, 0.0, true)
+        shooterSubsystem.setSpeed(0.0)
     }
 
     override fun isFinished() = false
