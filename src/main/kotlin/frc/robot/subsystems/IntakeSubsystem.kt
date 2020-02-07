@@ -20,7 +20,7 @@ class IntakeSubsystem(val motor: SpeedController) : SubsystemBase() {
     var internalTargetSpeed = 0.0
     var speedIncPerT = 0.0
 
-    val curveLen = 200
+    val curveLen = 20
 
     var internalSpeed = 0.0
 

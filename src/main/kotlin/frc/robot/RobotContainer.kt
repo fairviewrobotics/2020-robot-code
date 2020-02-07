@@ -127,16 +127,16 @@ class RobotContainer {
 
     //turnButton.whenPressed(turnToAngleCommand)
 
-    JoystickButton(joystick0, 8).whenHeld(FixedIntakeSpeed(intake, { 0.5 }))
-    JoystickButton(joystick0, 9).whenHeld(FixedIntakeSpeed(intake, { -0.5 }))
+    JoystickButton(joystick0, 8).whenHeld(FixedIntakeSpeed(intake, { joystick0.getZ() }))
+    JoystickButton(joystick0, 9).whenHeld(FixedIntakeSpeed(intake, { -joystick0.getZ() }))
 
-    JoystickButton(joystick0, 11).whenHeld(FixedIndexerSpeed(indexer, { 0.3 }))
-    JoystickButton(joystick0, 10).whenHeld(FixedIndexerSpeed(indexer, { -0.3 }))
+    JoystickButton(joystick0, 11).whenHeld(FixedIndexerSpeed(indexer, { 0.4 }))
+    JoystickButton(joystick0, 10).whenHeld(FixedIndexerSpeed(indexer, { -0.4 }))
 
     JoystickButton(joystick0, 3).whenHeld(FixedGateSpeed(gate, { 0.3 }))
     JoystickButton(joystick0, 2).whenHeld(FixedGateSpeed(gate, { -0.3 }))
 
-    JoystickButton(joystick0, 5).whenHeld(FixedShooterSpeed(shooter, { 0.5 }))
+    JoystickButton(joystick0, 5).whenHeld(FixedShooterSpeed(shooter, { joystick0.getZ() }))
 
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
