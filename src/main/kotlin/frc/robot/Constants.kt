@@ -26,9 +26,16 @@ class Constants {
   companion object {
     val kShooterSpeed = 1.0
     val kGateSpeed = 0.75
-
     val kIntakeSpeed = 0.75
     val kIndexerSpeed = 0.75
+
+    val kWinch0Port = 20
+    val kWinch1Port = 21
+    val kGatePort = 3
+    val kIndexerPort = 2
+    val kIntakePort = 4
+    val kShooterPort = 10
+    val kLED0Port = 0
 
     val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,
@@ -38,7 +45,10 @@ class Constants {
             "DrivetrainPID_AngleRateToleranceDegPerS" to 1.0,
             "DrivetrainSpeedCoeff_Left" to 1.0,
             "DrivetrainSpeedCoeff_Right" to 1.0,
-            "IntakeBaseSpeed" to 0.0
+            "WinchPID_P" to 0.035,
+            "WinchPID_I" to 0.0,
+            "WinchPID_D" to 0.005,
+            "WinchPID_PositionTolerance" to 1.0
     )
 
     /** NetworkTables Constants Management **/
