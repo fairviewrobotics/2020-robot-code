@@ -41,6 +41,8 @@ class Constants {
     val kShooterPort = 10
     val kLED0Port = 0
 
+    val kEndgameStart = 120
+
     val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,
             "DrivetrainPID_I" to 0.0,

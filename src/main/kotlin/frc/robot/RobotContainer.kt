@@ -9,6 +9,7 @@ package frc.robot
 
 import frc.robot.commands.*
 import frc.robot.subsystems.*
+import frc.robot.triggers.*
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -141,27 +142,27 @@ class RobotContainer {
             )
     )
 
-    JoystickButton(controller1, kB.value).whenHeld(
+    EndgameTrigger().and(JoystickButton(controller1, kB.value)).whileActiveContinuous(
             ParallelCommandGroup(
                     FixedWinchSpeed(winch0, { -Constants.kWinchDeploySpeed }),
                     FixedWinchSpeed(winch1, { -Constants.kWinchDeploySpeed })
             ).withTimeout(5.0)
     )
 
-    JoystickButton(controller1, kB.value).whenActive(
+    EndgameTrigger().and(JoystickButton(controller1, kB.value)).whenActive(
             ParallelCommandGroup(
                     FixedIndexerSpeed(indexer, {0.0}),
                     FixedIntakeSpeed(intake, {0.0})
             )
     )
 
-    Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh })
+    EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh }))
             .and(JoystickButton(controller1, kB.value).negate())
             .whileActiveOnce(
               FixedWinchSpeed(winch0, { controller1.getTriggerAxis(kLeft) })
     )
 
-    Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh })
+    EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh }))
             .and(JoystickButton(controller1, kB.value).negate())
             .whileActiveOnce(
               FixedWinchSpeed(winch1, { controller1.getTriggerAxis(kRight) })
