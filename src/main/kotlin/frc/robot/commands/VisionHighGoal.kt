@@ -20,6 +20,7 @@ class VisionHighGoal(val driveSubsystem: DrivetrainSubsystem, forwardSpeed: Doub
                 Constants.constants["DrivetrainPID_I"] ?: 0.0,
                 Constants.constants["DrivetrainPID_D"] ?: 0.005
         ),
+        )
         driveSubsystem::getAngle,
         {
             /* dampen turning */

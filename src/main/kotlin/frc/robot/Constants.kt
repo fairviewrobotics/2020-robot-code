@@ -24,6 +24,13 @@ private data class ConstantsListener (val func: () -> Unit, val id: Int)
 
 class Constants {
   companion object {
+    val kWinch0Port = 20;
+    val kWinch1Port = 21;
+    val kGatePort = 3;
+    val kIndexerPort = 2;
+    val kIntakePort = 4;
+    val kShooterPort = 10;
+
     val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,
             "DrivetrainPID_I" to 0.0,
@@ -32,7 +39,11 @@ class Constants {
             "DrivetrainPID_AngleRateToleranceDegPerS" to 1.0,
             "DrivetrainSpeedCoeff_Left" to 1.0,
             "DrivetrainSpeedCoeff_Right" to 1.0,
-            "IntakeBaseSpeed" to 0.0
+            "IntakeBaseSpeed" to 0.0,
+            "WinchPID_P" to 0.035,
+            "WinchPID_I" to 0.0,
+            "WinchPID_D" to 0.005,
+            "WinchPID_PositionTolerance" to 1.0
     )
 
     /** NetworkTables Constants Management **/

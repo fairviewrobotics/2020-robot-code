@@ -51,10 +51,12 @@ class RobotContainer {
   val gyro = AHRS()
 
   val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
-  val shooter = ShooterSubsystem(CANSparkMax(10, MotorType.kBrushless))
-  val intake = IntakeSubsystem(WPI_TalonSRX(4))
-  val indexer = IndexerSubsystem(WPI_TalonSRX(2))
-  val gate = GateSubsystem(WPI_TalonSRX(3))
+  val shooter = ShooterSubsystem(CANSparkMax(kShooterPort, MotorType.kBrushless))
+  val intake = IntakeSubsystem(WPI_TalonSRX(kIntakePort))
+  val indexer = IndexerSubsystem(WPI_TalonSRX(kIndexerPort))
+  val gate = GateSubsystem(WPI_TalonSRX(kGatePort))
+  val winch0 = WinchSubsystem(WPI_TalonSRX(kWinch0Port))
+  val winch1 = WinchSubsystem(WPI_TalonSRX(kWinch1Port))
 
   /*** --- commands --- ***/
   //drive by a joystick
@@ -130,16 +132,16 @@ class RobotContainer {
 
     //turnButton.whenPressed(turnToAngleCommand)
 
-    JoystickButton(controller0, kA.value).whenHeld(FixedIntakeSpeed(intake, { controller0.getY(kLeft) }))
-    JoystickButton(controller0, kB.value).whenHeld(FixedIntakeSpeed(intake, { -controller0.getY(kLeft) }))
+    JoystickButton(controller0, kY.value).whenHeld(FixedIntakeSpeed(intake, { controller0.getY(kLeft) }))
+    //JoystickButton(controller0, kB.value).whenHeld(FixedIntakeSpeed(intake, { -controller0.getY(kLeft) }))
 
     JoystickButton(controller0, kX.value).whenHeld(FixedIndexerSpeed(indexer, { controller0.getY(kLeft) }))
-    JoystickButton(controller0, kY.value).whenHeld(FixedIndexerSpeed(indexer, { -controller0.getY(kLeft) }))
+    //JoystickButton(controller0, kY.value).whenHeld(FixedIndexerSpeed(indexer, { -controller0.getY(kLeft) }))
 
-    JoystickButton(controller0, kBumperLeft.value).whenHeld(FixedGateSpeed(gate, { controller0.getY(kLeft) }))
-    JoystickButton(controller0, kBumperRight.value).whenHeld(FixedGateSpeed(gate, { -controller0.getY(kLeft) }))
+    JoystickButton(controller0, kB.value).whenHeld(FixedGateSpeed(gate, { controller0.getY(kLeft) }))
+    //JoystickButton(controller0, kBumperRight.value).whenHeld(FixedGateSpeed(gate, { -controller0.getY(kLeft) }))
 
-    JoystickButton(controller0, kStart.value).whenHeld(FixedShooterSpeed(shooter, { controller0.getY(kLeft) }))
+    JoystickButton(controller0, kX.value).whenHeld(FixedShooterSpeed(shooter, { controller0.getY(kLeft) }))
 
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
