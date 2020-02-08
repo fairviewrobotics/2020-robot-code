@@ -17,8 +17,7 @@ import frc.robot.Constants
  * Drive the drivetrain based on a joystick
  */
 class PositionWinch(val winchSubsystem: WinchSubsystem,
-                     val targetPosition: Double,
-                     val speed: () -> Double) : PIDCommand(
+                     val targetPosition: Double) : PIDCommand(
                             PIDController(
                                     Constants.constants["WinchPID_P"] ?: 0.035,
                                     Constants.constants["WinchPID_I"] ?: 0.0,
