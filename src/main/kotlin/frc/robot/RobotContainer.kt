@@ -58,11 +58,13 @@ class RobotContainer {
   val gyro = AHRS()
 
   val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
-  val shooter = ShooterSubsystem(CANSparkMax(10, MotorType.kBrushless))
-  val intake = IntakeSubsystem(WPI_TalonSRX(4))
-  val indexer = IndexerSubsystem(WPI_TalonSRX(2))
-  val gate = GateSubsystem(WPI_TalonSRX(3))
-  val lights = LEDSubsystem(AddressableLED(0), 60, DriverStation.getInstance())
+  val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
+  val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort))
+  val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
+  val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort))
+  val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
+  val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
+  val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
 
   /*** --- commands --- ***/
   //drive by a joystick (controller1)
@@ -140,6 +142,7 @@ class RobotContainer {
     )
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
+
 
     /* setup default commands */
     drivetrain.setDefaultCommand(XboxDriveCommand)
