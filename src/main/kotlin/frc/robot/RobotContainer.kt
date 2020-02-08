@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj.AddressableLED
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.SpeedControllerGroup
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.GenericHID.Hand.*
@@ -55,6 +57,7 @@ class RobotContainer {
   val intake = IntakeSubsystem(WPI_TalonSRX(4))
   val indexer = IndexerSubsystem(WPI_TalonSRX(2))
   val gate = GateSubsystem(WPI_TalonSRX(3))
+  val lights = LEDSubsystem(AddressableLED(0), 60, DriverStation.getInstance())
 
   /*** --- commands --- ***/
   //drive by a joystick
@@ -87,6 +90,13 @@ class RobotContainer {
 
   /* for running shooter */
   val shooterCommand = FixedShooterSpeed(shooter, {0.5})
+
+  /*LED Lights */
+  val setAlliance = SetAlliance(lights)
+  val setRed = SetColor(lights, 255, 0, 0)
+  val setBlue = SetColor(lights, 0,0,255)
+  val setWhite = SetColor(lights, 255,255,255)
+  val setRainbow = SetRainbow(lights)
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -139,7 +149,8 @@ class RobotContainer {
     JoystickButton(controller0, kBumperLeft.value).whenHeld(FixedGateSpeed(gate, { controller0.getY(kLeft) }))
     JoystickButton(controller0, kBumperRight.value).whenHeld(FixedGateSpeed(gate, { -controller0.getY(kLeft) }))
 
-    JoystickButton(controller0, kStart.value).whenHeld(FixedShooterSpeed(shooter, { controller0.getY(kLeft) }))
+    //JoystickButton(joystick0, 5).whenHeld(FixedShooterSpeed(shooter, { joystick0.getZ() }))
+  
 
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
@@ -155,6 +166,7 @@ class RobotContainer {
 
     indexer.setDefaultCommand(FixedIndexerSpeed(indexer, {0.0}))
     gate.setDefaultCommand(FixedGateSpeed(gate, {0.0}))
+    lights.setDefaultCommand(setAlliance)
   }
 
 
