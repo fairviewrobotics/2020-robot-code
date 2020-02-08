@@ -148,6 +148,13 @@ class RobotContainer {
             ).withTimeout(5.0)
     )
 
+    JoystickButton(controller1, kB.value).whenActive(
+            ParallelCommandGroup(
+                    FixedIndexerSpeed(indexer, {0.0}),
+                    FixedIntakeSpeed(intake, {0.0})
+            )
+    )
+
     Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh })
             .and(JoystickButton(controller1, kB.value).negate())
             .whileActiveOnce(
