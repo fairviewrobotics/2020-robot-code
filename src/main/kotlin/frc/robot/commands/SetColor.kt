@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase
 /**
  *Set the lights to certain colors
  */
-class SetLights(val ledSubsystem: LEDSubsystem, val r: Int, val g: Int, val b: Int) : CommandBase() {
+class SetColor(val ledSubsystem: LEDSubsystem, val r: Int, val g: Int, val b: Int) : CommandBase() {
     init {
         addRequirements(ledSubsystem)
     }

@@ -4,7 +4,7 @@ import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.CommandBase
 
 /**
- *Set the lights to certain colors
+ *Set the lights to a rainbow pattern 
  */
 class SetRainbow(val ledSubsystem: LEDSubsystem) : CommandBase() {
     init {
@@ -12,7 +12,7 @@ class SetRainbow(val ledSubsystem: LEDSubsystem) : CommandBase() {
     }
 
     override fun execute() {
-        /*val m_rainbowFirstPixelHue = 0
+        var m_rainbowFirstPixelHue = 0
         for (i in 0 until ledSubsystem.returnLength()) {
             // Calculate the hue 
             var hue = (m_rainbowFirstPixelHue + (i * 180 / ledSubsystem.returnLength())) % 180;
@@ -24,7 +24,7 @@ class SetRainbow(val ledSubsystem: LEDSubsystem) : CommandBase() {
           // Check bounds
           m_rainbowFirstPixelHue %= 180;
 
-         ledSubsystem.display()/* */
+         ledSubsystem.display()
     }
 
     override fun end(interrupted: Boolean) {
