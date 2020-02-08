@@ -24,6 +24,12 @@ private data class ConstantsListener (val func: () -> Unit, val id: Int)
 
 class Constants {
   companion object {
+    val kShooterSpeed = 1.0
+    val kGateSpeed = 0.75
+
+    val kIntakeSpeed = 0.75
+    val kIndexerSpeed = 0.75
+
     val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,
             "DrivetrainPID_I" to 0.0,
