@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel.MotorType
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
+import edu.wpi.first.wpilibj2.command.button.Trigger
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -87,16 +88,11 @@ class RobotContainer {
 
   /** -- more than 5 point autos (hopefully) -- **/
   // power port vision
-  val visionHighGoalCommand = SequentialCommandGroup(
+  val visionHighGoalLineUp = SequentialCommandGroup(
           VisionHighGoal(drivetrain, -0.3),
           DriveDoubleSupplier(drivetrain, { -0.3 }, { 0.0 }).withTimeout(0.5)
   )
 
-  /* for testing PID loops */
-  val turnToAngleCommand = TurnToAngle(drivetrain, 90.0, 0.0)
-
-  /* for running shooter */
-  val shooterCommand = FixedShooterSpeed(shooter, {0.5})
 
   /*LED Lights */
   val setAlliance = SetAlliance(lights)
@@ -131,15 +127,40 @@ class RobotContainer {
     val runGate = FixedGateSpeed(gate, { Constants.kGateSpeed })
     val runShooter = FixedShooterSpeed(shooter, { Constants.kShooterSpeed })
 
-    JoystickButton(controller1, kBumperRight.value).and(JoystickButton(controller0, kB.value).negate()).whileActiveContinuous(
-            SequentialCommandGroup(
-                    runGate.withTimeout(0.5),
-                    ParallelCommandGroup(
-                            runGate,
-                            runShooter
-                    ).withTimeout(2.0)
+    JoystickButton(controller1, kBumperRight.value).and(JoystickButton(controller0, kB.value).negate()).whileActiveOnce(
+            ParallelCommandGroup(
+                    SequentialCommandGroup(
+                            runShooter.withTimeout(0.5),
+                            ParallelCommandGroup(
+                                runGate,
+                                runShooter
+                            )
+                    ),
+                    FixedIntakeSpeed(intake, { 0.0 }),
+                    FixedIndexerSpeed(indexer, { 0.0 })
             )
     )
+
+    JoystickButton(controller1, kB.value).whenHeld(
+            ParallelCommandGroup(
+                    FixedWinchSpeed(winch0, { -Constants.kWinchDeploySpeed }),
+                    FixedWinchSpeed(winch1, { -Constants.kWinchDeploySpeed })
+            ).withTimeout(5.0)
+    )
+
+    Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh })
+            .and(JoystickButton(controller1, kB.value).negate())
+            .whileActiveOnce(
+              FixedWinchSpeed(winch0, { controller1.getTriggerAxis(kLeft) })
+    )
+
+    Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh })
+            .and(JoystickButton(controller1, kB.value).negate())
+            .whileActiveOnce(
+              FixedWinchSpeed(winch1, { controller1.getTriggerAxis(kRight) })
+    )
+
+    JoystickButton(controller1, kA.value).whenHeld(visionHighGoalLineUp)
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
 
@@ -147,13 +168,14 @@ class RobotContainer {
     /* setup default commands */
     drivetrain.setDefaultCommand(XboxDriveCommand)
     gate.setDefaultCommand(FixedGateSpeed(gate, { 0.0 }))
+    shooter.setDefaultCommand(FixedShooterSpeed(shooter, { 0.0 }))
 
     indexer.setDefaultCommand(FixedIndexerSpeed(indexer, { -Constants.kIndexerSpeed }))
     intake.setDefaultCommand(FixedIntakeSpeed(intake, { Constants.kIntakeSpeed }))
     lights.setDefaultCommand(setAlliance)
 
     /* set options for autonomous */
-    m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionHighGoalCommand)
+    m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionHighGoalLineUp)
     m_autoCommandChooser.addOption("Backup 2s Autonomous", backupAuto)
     m_autoCommandChooser.addOption("Forward 2s Autonomous", forwardAuto)
     m_autoCommandChooser.addOption("Backup 2s and Look Cool Autonomous", spinAuto)

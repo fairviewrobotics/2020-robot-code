@@ -29,6 +29,10 @@ class Constants {
     val kIntakeSpeed = 0.75
     val kIndexerSpeed = 0.75
 
+    val kWinchDeploySpeed = 1.0
+
+    val kWinchTriggerThresh = 0.15
+
     val kWinch0Port = 20
     val kWinch1Port = 21
     val kGatePort = 3
