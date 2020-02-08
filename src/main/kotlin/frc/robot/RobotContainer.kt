@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.SpeedControllerGroup
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
+import edu.wpi.first.wpilibj.GenericHID.Hand.*
+import edu.wpi.first.wpilibj.XboxController
+import edu.wpi.first.wpilibj.XboxController.Button.*
 
 import com.ctre.phoenix.motorcontrol.can.*
 import com.kauailabs.navx.frc.AHRS
@@ -33,7 +36,7 @@ class RobotContainer {
 
   var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
 
-  val joystick0 = Joystick(0)
+  val controller0 = XboxController(0)
 
   /** --- setup drivetrain --- **/
   val motorFrontLeft =  WPI_TalonSRX(5)
@@ -55,7 +58,7 @@ class RobotContainer {
 
   /*** --- commands --- ***/
   //drive by a joystick
-  val joystickDriveCommand = JoystickDrive(drivetrain, joystick0)
+  val XboxDriveCommand = XboxDrive(drivetrain, controller0)
 
   /** -- 0 point autos -- **/
   val noAuto = DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.0 })
@@ -112,9 +115,9 @@ class RobotContainer {
    */
 
   fun configureButtonBindings() {
-    val alignButton = JoystickButton(joystick0, 4)
+    //val alignButton = JoystickButton(controller0, 4)
 
-    //val turnButton = JoystickButton(joystick0, 4)
+    //val turnButton = JoystickButton(controller0, 4)
 
 
     /**
@@ -127,16 +130,16 @@ class RobotContainer {
 
     //turnButton.whenPressed(turnToAngleCommand)
 
-    JoystickButton(joystick0, 8).whenHeld(FixedIntakeSpeed(intake, { joystick0.getZ() }))
-    JoystickButton(joystick0, 9).whenHeld(FixedIntakeSpeed(intake, { -joystick0.getZ() }))
+    JoystickButton(controller0, kA.value).whenHeld(FixedIntakeSpeed(intake, { controller0.getY(kLeft) }))
+    JoystickButton(controller0, kB.value).whenHeld(FixedIntakeSpeed(intake, { -controller0.getY(kLeft) }))
 
-    JoystickButton(joystick0, 11).whenHeld(FixedIndexerSpeed(indexer, { 0.4 }))
-    JoystickButton(joystick0, 10).whenHeld(FixedIndexerSpeed(indexer, { -0.4 }))
+    JoystickButton(controller0, kX.value).whenHeld(FixedIndexerSpeed(indexer, { controller0.getY(kLeft) }))
+    JoystickButton(controller0, kY.value).whenHeld(FixedIndexerSpeed(indexer, { -controller0.getY(kLeft) }))
 
-    JoystickButton(joystick0, 3).whenHeld(FixedGateSpeed(gate, { 0.3 }))
-    JoystickButton(joystick0, 2).whenHeld(FixedGateSpeed(gate, { -0.3 }))
+    JoystickButton(controller0, kBumperLeft.value).whenHeld(FixedGateSpeed(gate, { controller0.getY(kLeft) }))
+    JoystickButton(controller0, kBumperRight.value).whenHeld(FixedGateSpeed(gate, { -controller0.getY(kLeft) }))
 
-    JoystickButton(joystick0, 5).whenHeld(FixedShooterSpeed(shooter, { joystick0.getZ() }))
+    JoystickButton(controller0, kStart.value).whenHeld(FixedShooterSpeed(shooter, { controller0.getY(kLeft) }))
 
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
@@ -148,7 +151,7 @@ class RobotContainer {
    * They will be run if no other commands are sheduled that have a dependency on that subsystem
    */
   fun configureDefaultCommands() {
-    drivetrain.setDefaultCommand(joystickDriveCommand)
+    drivetrain.setDefaultCommand(XboxDriveCommand)
 
     indexer.setDefaultCommand(FixedIndexerSpeed(indexer, {0.0}))
     gate.setDefaultCommand(FixedGateSpeed(gate, {0.0}))

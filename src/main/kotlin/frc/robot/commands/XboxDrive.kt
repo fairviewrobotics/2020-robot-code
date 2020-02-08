@@ -9,18 +9,18 @@ package frc.robot.commands
 
 import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.CommandBase
-import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj.XboxController
 
 /**
  * Drive the drivetrain based on a joystick
  */
-class JoystickDrive(val driveSubsystem: DrivetrainSubsystem, val joystick: Joystick) : CommandBase() {
+class XboxDrive(val driveSubsystem: DrivetrainSubsystem, val controller: XboxController) : CommandBase() {
     init {
         addRequirements(driveSubsystem)
     }
 
     override fun execute() {
-        driveSubsystem.driveArcade(-joystick.getY(), joystick.getX())
+        driveSubsystem.driveArcade(-controller.getY(), controller.getX())
     }
 
     override fun end(interrupted: Boolean) {
