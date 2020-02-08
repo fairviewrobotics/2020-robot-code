@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel.MotorType
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
+
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -38,7 +40,10 @@ class RobotContainer {
 
   var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
 
+  /* controller0 - secondary driver controller */
   val controller0 = XboxController(0)
+  /* controller1 - primary driver controller (overriden by controller0) */
+  val controller1 = XboxController(1)
 
   /** --- setup drivetrain --- **/
   val motorFrontLeft =  WPI_TalonSRX(5)
@@ -53,15 +58,17 @@ class RobotContainer {
   val gyro = AHRS()
 
   val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
-  val shooter = ShooterSubsystem(CANSparkMax(10, MotorType.kBrushless))
-  val intake = IntakeSubsystem(WPI_TalonSRX(4))
-  val indexer = IndexerSubsystem(WPI_TalonSRX(2))
-  val gate = GateSubsystem(WPI_TalonSRX(3))
-  val lights = LEDSubsystem(AddressableLED(0), 60, DriverStation.getInstance())
+  val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
+  val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort))
+  val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
+  val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort))
+  val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
+  val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
+  val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
 
   /*** --- commands --- ***/
-  //drive by a joystick
-  val XboxDriveCommand = XboxDrive(drivetrain, controller0)
+  //drive by a joystick (controller1)
+  val XboxDriveCommand = XboxDrive(drivetrain, controller1)
 
   /** -- 0 point autos -- **/
   val noAuto = DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.0 })
@@ -104,17 +111,6 @@ class RobotContainer {
   init {
     // Configure the button bindings
     configureButtonBindings()
-    configureDefaultCommands()
-    /* set options for autonomous */
-    m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionHighGoalCommand)
-    m_autoCommandChooser.addOption("Backup 2s Autonomous", backupAuto)
-    m_autoCommandChooser.addOption("Forward 2s Autonomous", forwardAuto)
-    m_autoCommandChooser.addOption("Backup 2s and Look Cool Autonomous", spinAuto)
-    m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
-
-    SmartDashboard.putData("Auto mode", m_autoCommandChooser)
-
-    Constants.loadConstants()
   }
 
   /**
@@ -125,50 +121,47 @@ class RobotContainer {
    */
 
   fun configureButtonBindings() {
-    //val alignButton = JoystickButton(controller0, 4)
+    Constants.loadConstants()
+    /* controller0 overrides */
+    JoystickButton(controller0, kY.value).whenHeld(FixedIntakeSpeed(intake, { controller0.getY(kLeft) }))
+    JoystickButton(controller0, kX.value).whenHeld(FixedIndexerSpeed(indexer, { -controller0.getY(kLeft) }))
+    JoystickButton(controller0, kB.value).whenHeld(FixedGateSpeed(gate, { controller0.getY(kLeft) }))
+    JoystickButton(controller0, kA.value).whenHeld(FixedShooterSpeed(shooter, { -Constants.kShooterSpeed }))
 
-    //val turnButton = JoystickButton(controller0, 4)
+    val runGate = FixedGateSpeed(gate, { Constants.kGateSpeed })
+    val runShooter = FixedShooterSpeed(shooter, { Constants.kShooterSpeed })
 
-
-    /**
-     * TODO: when the vision button is pressed, run a sequential group of commands
-     * 1. Drive towards target till it can be seen (DONE)
-     * 2. Drive forwards for ~0.5 seconds
-     * 3. Shoot
-     */
-    //alignButton.whenPressed(visionHighGoalCommand)
-
-    //turnButton.whenPressed(turnToAngleCommand)
-
-    JoystickButton(controller0, kA.value).whenHeld(FixedIntakeSpeed(intake, { controller0.getY(kLeft) }))
-    JoystickButton(controller0, kB.value).whenHeld(FixedIntakeSpeed(intake, { -controller0.getY(kLeft) }))
-
-    JoystickButton(controller0, kX.value).whenHeld(FixedIndexerSpeed(indexer, { controller0.getY(kLeft) }))
-    JoystickButton(controller0, kY.value).whenHeld(FixedIndexerSpeed(indexer, { -controller0.getY(kLeft) }))
-
-    JoystickButton(controller0, kBumperLeft.value).whenHeld(FixedGateSpeed(gate, { controller0.getY(kLeft) }))
-    JoystickButton(controller0, kBumperRight.value).whenHeld(FixedGateSpeed(gate, { -controller0.getY(kLeft) }))
-
-    //JoystickButton(joystick0, 5).whenHeld(FixedShooterSpeed(shooter, { joystick0.getZ() }))
-  
-
+    JoystickButton(controller1, kBumperRight.value).and(JoystickButton(controller0, kB.value).negate()).whileActiveContinuous(
+            SequentialCommandGroup(
+                    runGate.withTimeout(0.5),
+                    ParallelCommandGroup(
+                            runGate,
+                            runShooter
+                    ).withTimeout(2.0)
+            )
+    )
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
 
-  }
 
-  /**
-   * Set default commands for each subsystem
-   * They will be run if no other commands are sheduled that have a dependency on that subsystem
-   */
-  fun configureDefaultCommands() {
+    /* setup default commands */
     drivetrain.setDefaultCommand(XboxDriveCommand)
+    gate.setDefaultCommand(FixedGateSpeed(gate, { 0.0 }))
 
-    indexer.setDefaultCommand(FixedIndexerSpeed(indexer, {0.0}))
-    gate.setDefaultCommand(FixedGateSpeed(gate, {0.0}))
+    indexer.setDefaultCommand(FixedIndexerSpeed(indexer, { -Constants.kIndexerSpeed }))
+    intake.setDefaultCommand(FixedIntakeSpeed(intake, { Constants.kIntakeSpeed }))
     lights.setDefaultCommand(setAlliance)
-  }
 
+    /* set options for autonomous */
+    m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionHighGoalCommand)
+    m_autoCommandChooser.addOption("Backup 2s Autonomous", backupAuto)
+    m_autoCommandChooser.addOption("Forward 2s Autonomous", forwardAuto)
+    m_autoCommandChooser.addOption("Backup 2s and Look Cool Autonomous", spinAuto)
+    m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
+
+    SmartDashboard.putData("Auto mode", m_autoCommandChooser)
+
+  }
 
   fun getAutonomousCommand(): Command {
     // Return the selected command

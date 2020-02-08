@@ -51,7 +51,6 @@ class IntakeSubsystem(val motor: SpeedController) : SubsystemBase() {
 
     /* default command (don't spin) */
     override fun periodic() {
-        //motor.set(Constants.constants["IntakeBaseSpeed"] ?: 0.0)
         setTargetSpeed(0.0)
         updateSpeedCurve()
     }
