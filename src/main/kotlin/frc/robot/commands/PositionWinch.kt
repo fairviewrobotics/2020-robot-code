@@ -9,6 +9,9 @@ package frc.robot.commands
 
 import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.CommandBase
+import edu.wpi.first.wpilibj.controller.PIDController
+import edu.wpi.first.wpilibj2.command.PIDCommand
+import frc.robot.Constants
 
 /**
  * Drive the drivetrain based on a joystick
@@ -20,7 +23,7 @@ class PositionWinch(val winchSubsystem: WinchSubsystem,
                                     Constants.constants["WinchPID_P"] ?: 0.035,
                                     Constants.constants["WinchPID_I"] ?: 0.0,
                                     Constants.constants["WinchPID_D"] ?: 0.005),
-                            winchSystem::getPosition,
+                            winchSubsystem::getPosition,
                             targetPosition,
                             {output: Double -> winchSubsystem.setSpeed(output)},
                             arrayOf(winchSubsystem)) {
@@ -38,10 +41,10 @@ class PositionWinch(val winchSubsystem: WinchSubsystem,
         winchSubsystem.setSpeed(0.0)
     }*/
 
-    override fun isFinished() {
+    override fun isFinished(): Boolean {
         // check if the position is tolerable
         val error = winchSubsystem.getPosition() - targetPosition
-        if (error <= Constants.constants["WinchPID_PositionTolerance"]) {
+        if (error <= Constants.constants["WinchPID_PositionTolerance"]?:0.0) {
             return true
         } else {
             return false

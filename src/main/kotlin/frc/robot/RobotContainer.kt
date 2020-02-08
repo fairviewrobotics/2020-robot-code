@@ -51,12 +51,12 @@ class RobotContainer {
   val gyro = AHRS()
 
   val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
-  val shooter = ShooterSubsystem(CANSparkMax(kShooterPort, MotorType.kBrushless))
-  val intake = IntakeSubsystem(WPI_TalonSRX(kIntakePort))
-  val indexer = IndexerSubsystem(WPI_TalonSRX(kIndexerPort))
-  val gate = GateSubsystem(WPI_TalonSRX(kGatePort))
-  val winch0 = WinchSubsystem(WPI_TalonSRX(kWinch0Port))
-  val winch1 = WinchSubsystem(WPI_TalonSRX(kWinch1Port))
+  val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
+  val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort))
+  val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
+  val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort))
+  val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
+  val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
 
   /*** --- commands --- ***/
   //drive by a joystick

@@ -18,8 +18,13 @@ class WinchSubsystem(val winchMotor: SpeedController) : SubsystemBase() {
         winchMotor.set(0.0)
     }
 
-    fun release(speed: Double) {
+    fun setSpeed(speed: Double) {
         // release the winch a certain speed
         winchMotor.set(speed)
+    }
+
+    fun getPosition(): Double {
+        // TODO
+        return 0.0
     }
 }
