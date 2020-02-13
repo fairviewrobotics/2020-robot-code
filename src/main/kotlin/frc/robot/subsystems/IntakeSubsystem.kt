@@ -28,7 +28,7 @@ class IntakeSubsystem(val motor: SpeedController) : SubsystemBase() {
     private fun setTargetSpeed(target: Double) {
         internalTargetSpeed = target
 
-        if(internalTargetSpeed != pSpeed) {
+        if (internalTargetSpeed != pSpeed) {
             isCurve = true
             curveCounter = 0
 
@@ -39,11 +39,11 @@ class IntakeSubsystem(val motor: SpeedController) : SubsystemBase() {
     }
 
     private fun updateSpeedCurve() {
-        if(isCurve) {
+        if (isCurve) {
             internalSpeed += speedIncPerT
             curveCounter++
 
-            if(curveCounter >= curveLen) isCurve = false
+            if (curveCounter >= curveLen) isCurve = false
         }
 
         motor.set(internalSpeed)

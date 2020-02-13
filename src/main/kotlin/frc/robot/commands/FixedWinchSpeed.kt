@@ -16,7 +16,7 @@ import frc.robot.Constants
 /**
  * Drive the drivetrain based on a joystick
  */
-class FixedWinchSpeed(val winchSubsystem: WinchSubsystem, val speed: () -> Double): CommandBase() {
+class FixedWinchSpeed(val winchSubsystem: WinchSubsystem, val speed: () -> Double) : CommandBase() {
     init {
         addRequirements(winchSubsystem)
     }

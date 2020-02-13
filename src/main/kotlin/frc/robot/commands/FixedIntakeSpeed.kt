@@ -23,7 +23,7 @@ class FixedIntakeSpeed(val intakeSubsystem: IntakeSubsystem, val speed: () -> Do
     }
 
     override fun end(interrupted: Boolean) {
-       intakeSubsystem.setSpeed(0.0)
+        intakeSubsystem.setSpeed(0.0)
     }
 
     override fun isFinished() = false

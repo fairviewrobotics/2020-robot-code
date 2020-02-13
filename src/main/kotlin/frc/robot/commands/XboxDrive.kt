@@ -20,7 +20,7 @@ class XboxDrive(val driveSubsystem: DrivetrainSubsystem, val controller: XboxCon
     }
 
     override fun execute() {
-        driveSubsystem.driveArcade(-controller.getY(), controller.getX())
+        driveSubsystem.driveArcade(-controller.y, controller.x)
     }
 
     override fun end(interrupted: Boolean) {

@@ -14,13 +14,13 @@ class SetColor(val ledSubsystem: LEDSubsystem, val r: Int, val g: Int, val b: In
     override fun execute() {
         for (i in 0 until ledSubsystem.returnLength()) {
             ledSubsystem.setRGB(i, r, g, b)
-         }
-         
-         ledSubsystem.display()
+        }
+
+        ledSubsystem.display()
     }
 
     override fun end(interrupted: Boolean) {
-        ledSubsystem.setRGB(0,0,0,0)
+        ledSubsystem.setRGB(0, 0, 0, 0)
         ledSubsystem.display()
     }
 
