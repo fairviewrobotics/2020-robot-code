@@ -4,11 +4,17 @@ import edu.wpi.first.wpilibj.SpeedController
 
 class SpeedControllerCustom(var coeff: Double, val motor: SpeedController): 
     SpeedController {
+    // Takes speed controller with motor, and coefficient, then just has calls to the motor commands.
+    // Occasionally uses the coeff when setting and calculating speed.
     override fun set(speed: Double){
         motor.set(speed*coeff)
     }
     override fun get(): Double{
-        return motor.get()/coeff
+        if (coeff!=0.0){
+            return motor.get()/coeff
+        } else{
+            return motor.get()
+        } 
     }
 
     fun getCoeff(): Double{

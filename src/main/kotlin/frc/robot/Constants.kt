@@ -22,11 +22,19 @@ class Constants {
     // Put Constants inside the companion object to make them globally accessible.
     // ex. val motorPort: Int = 0
 
+    // Constants for TurnToAngle Command
     val TurnToAngleP = 0.03
     val TurnToAngleI = 0.0
     val TurnToAngleD = 0.01
 
     val TurnToAngleleranceDeg = 2.0
     val TurnToAngleRateToleranceDegPerS = 1.0
+
+    // Constants for Shooter command
+    val ShooterP = 0.03
+    val ShooterI = 0.0
+    val ShooterD = 0.01
+    val ShooterFF = 1.0
+    // Comment what each of your constants is for!
   }
 }

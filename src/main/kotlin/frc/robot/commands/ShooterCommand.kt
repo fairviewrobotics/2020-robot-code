@@ -10,28 +10,25 @@
 package frc.robot.commands
 
 // Import all the required modules: The commands, subsystems, other libraries required in the init
-import edu.wpi.first.wpilibj.controller.PIDController
 import frc.robot.subsystems.*
-import edu.wpi.first.wpilibj2.command.PIDCommand
+import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.Constants
 
-class ShooterCommand(val shooter: ShooterSubsystem,val speed: Double) : PIDCommand(
-  PIDController(Constants.ShooterP, Constants.ShooterI, Constants.ShooterD),
-  shooter::getVelocity,
-  speed,
-  {output: Double -> shooter.setSpeed(output)},
-  arrayOf(shooter)) {
+class ShooterCommand(val shooter: ShooterSubsystem,val speed: Double) : CommandBase() {
   // In the init, between the parenthesis, include all the subsystems and modules
   // you must include. Optionally, replace CommandBase with PIDCommand, for
   // a PID command
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param m_subsystem The subsystem used by this command.
-   */
   init {
-    getController().enableContinuousInput(-180.0, 180.0)
-    getController().setTolerance(Constants.ShooterToleranceDeg, Constants.ShooterToleranceDegPerS)
+    pid = shooter.getPidController()
+    pid.setP(Constants.ShooterP)
+    pid.setI(Constants.ShooterI)
+    pid.setD(Constants.ShooterD)
+    pid.setFF(Constants.ShooterFF)
+    pid.setReference(speed,ctrl)//TODO: Figure out the correct control mode
+  }
+
+  override fun execute(){
+    shooter.
   }
 
   // Returns true when the command should end.

@@ -9,6 +9,7 @@ package frc.robot.subsystems
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import com.revrobotics.CANSparkMax
+import com.revrobotics.CANPIDController
 
 class ShooterSubsystem(val motor: CANSparkMax) : SubsystemBase() {
   /**
@@ -23,8 +24,9 @@ class ShooterSubsystem(val motor: CANSparkMax) : SubsystemBase() {
       motor.set(speed)
   }
 
-  fun getVelocity(): Double{
-    return encoder.getVelocity()
+
+  fun getPidController():CANError{
+    return motor.getPIDController()
   }
   /**
    * Will be called periodically whenever the CommandScheduler runs.

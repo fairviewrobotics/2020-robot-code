@@ -93,13 +93,15 @@ class RobotContainer {
 
     alignButton.whenPressed(TurnToAngle(drivetrain, 90.0))
     
-    // Knockout stuff
+    // Knockout Listeners
     knockFrontLeft.addListener({event ->
        if(knockFrontLeft.getBoolean(false)) {
          motorFrontLeft.disable()
        }
-       
-      }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate)
+       // Adds listener, if knockFrontLeft is changed from default false it will disable (hence the event anonymous function)
+      }, EntryListenerFlags.kNew or EntryListenerFlags.kUpdate) // Uses the listener events update or new for the event.
+
+      // The following code uses the same logic.
     
     knockFrontRight.addListener({event ->
         if(knockFrontRight.getBoolean(false)){

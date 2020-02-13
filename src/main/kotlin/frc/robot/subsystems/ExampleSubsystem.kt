@@ -5,10 +5,12 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems
+package frc.robot.subsystems // Makes the code importable.
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+// Import required subsystems, types.
 
+// Copy paste this code to create a new subsystem
 class ExampleSubsystem : SubsystemBase() {
   /**
    * Creates a new ExampleSubsystem.

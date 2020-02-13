@@ -5,12 +5,18 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+// An example command. Ideally copy and paste every time you want to create a new command.
+
 package frc.robot.commands
 
+// Import all the required modules: The commands, subsystems, other libraries required in the init
 import frc.robot.subsystems.ExampleSubsystem
 import edu.wpi.first.wpilibj2.command.CommandBase
 
 class ExampleCommand(val m_subsystem: ExampleSubsystem) : CommandBase() {
+  // In the init, between the parenthesis, include all the subsystems and modules
+  // you must include. Optionally, replace CommandBase with PIDCommand, for
+  // a PID command
   /**
    * Creates a new ExampleCommand.
    *

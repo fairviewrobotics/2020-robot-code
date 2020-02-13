@@ -18,13 +18,21 @@ class TurnToAngle(val driveSubsystem: DrivetrainSubsystem, targetAngle: Double):
         targetAngle,
         {output: Double -> driveSubsystem.driveArcade(0.0, output)},
         arrayOf(driveSubsystem)) {
-
+        // Takes a ton of inputs: the command itself will take the drivetrain for output,
+        // targetAngle to actually turn to.
+        // PIDCommand takes a ton of inputs: a new PID controller with P, I, D
+        // The method for getting the value (getAngle)
+        // The desired value (targetAngle)
+        // The place in which to put the output {output:Double ->} line
+        // And the driveSubsystem in an array, which is meant to take all requirements.
     init {
+        // Sets some parameters for the encoder: continuous input, and position or velocity tolerance
         getController().enableContinuousInput(-180.0, 180.0)
         getController().setTolerance(Constants.TurnToAngleleranceDeg, Constants.TurnToAngleRateToleranceDegPerS)
     }
 
     override fun isFinished(): Boolean {
+        // Finishes if gyros are broken, otherwise finishes when the angle is reached.
         if(!driveSubsystem.gyroUp()) return true
         return getController().atSetpoint()
     }

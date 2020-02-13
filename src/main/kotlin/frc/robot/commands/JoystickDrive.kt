@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Joystick
  * Drive the drivetrain based on a joystick
  */
 class JoystickDrive(val driveSubsystem: DrivetrainSubsystem, val joystick: Joystick) : CommandBase() {
+    // takes the joystick and drivetrain as inputs: joystick for reaing vals, drivetrain to output
     init {
         addRequirements(driveSubsystem)
     }
@@ -22,11 +23,14 @@ class JoystickDrive(val driveSubsystem: DrivetrainSubsystem, val joystick: Joyst
     override fun execute() {
         driveSubsystem.driveArcade(joystick.getY(), joystick.getX())
         println(driveSubsystem.getAngle())
+        // drive using joystick inputs.
     }
 
     override fun end(interrupted: Boolean) {
         driveSubsystem.driveArcade(0.0, 0.0, true)
+        // stops drivetrain by sending 0 speeds
     }
 
     override fun isFinished() = false
+    // should never be finished 
 }
