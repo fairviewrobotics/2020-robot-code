@@ -10,6 +10,7 @@ package frc.robot
 import frc.robot.commands.*
 import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.Joystick
@@ -39,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger
 class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
+  val sch = CommandScheduler.getInstance()
   var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
 
   var m_shooterCommandChooser: SendableChooser<Command> = SendableChooser()
@@ -124,7 +126,6 @@ class RobotContainer {
     JoystickButton(controller0, kX.value).whenHeld(FixedIndexerSpeed(indexer, { -controller0.getY(kLeft) }))
     JoystickButton(controller0, kB.value).whenHeld(FixedGateSpeed(gate, { controller0.getY(kLeft) }))
     JoystickButton(controller0, kA.value).whenHeld(FixedShooterSpeed(shooter, { -Constants.kShooterSpeed }))
-
     val runGate = FixedGateSpeed(gate, { Constants.kGateSpeed })
     val runShooter = FixedShooterSpeed(shooter, { Constants.kShooterSpeed })
 
@@ -171,7 +172,7 @@ class RobotContainer {
     JoystickButton(controller1, kA.value).whenHeld(visionHighGoalLineUp)
 
     /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
-
+    JoystickButton(controller0,kStart.value).whenPressed(cancelAll(sch))
 
     /* setup default commands */
     drivetrain.setDefaultCommand(XboxDriveCommand)
@@ -193,7 +194,7 @@ class RobotContainer {
     m_shooterCommandChooser.setDefaultOption("Fixed Speed", FixedShooterSpeed(shooter,{ 100.0 }))
     m_shooterCommandChooser.addOption("PIDShooter",ShooterPID(shooter,{ 100.0 }))
     SmartDashboard.putData("Auto mode", m_autoCommandChooser)
-
+    SmartDashboard.putData("Shooter Mode", m_shooterCommandChooser)
   }
 
   fun getAutonomousCommand(): Command {
