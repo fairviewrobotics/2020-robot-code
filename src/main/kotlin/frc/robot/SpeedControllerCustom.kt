@@ -1,11 +1,10 @@
+package frc.robot
+
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.can.*
 import edu.wpi.first.wpilibj.SpeedController
 
-class SpeedControllerCustom(var coeff: Double, val motor: SpeedController): 
-    SpeedController {
-    // Takes speed controller with motor, and coefficient, then just has calls to the motor commands.
-    // Occasionally uses the coeff when setting and calculating speed.
+class WeightedSpeedController(var coeff: Double, val motor: SpeedController): SpeedController {
     override fun set(speed: Double){
         motor.set(speed*coeff)
     }
@@ -15,18 +14,6 @@ class SpeedControllerCustom(var coeff: Double, val motor: SpeedController):
         } else{
             return motor.get()
         } 
-    }
-
-    fun getCoeff(): Double{
-        return coeff
-    }
-
-    fun setCoeff(newCoeff: Double){
-        coeff = newCoeff
-    }
-
-    fun getUnadjusted(): Double{
-        return motor.get()
     }
 
     override fun setInverted(isInverted: Boolean){

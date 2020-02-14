@@ -1,37 +1,37 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import com.revrobotics.CANSparkMax
+import com.revrobotics.CANError
+import com.revrobotics.CANEncoder
 import com.revrobotics.CANPIDController
+import edu.wpi.first.wpilibj.SpeedController
 
-class ShooterSubsystem(val motor: CANSparkMax) : SubsystemBase() {
-  /**
-   * Creates a new ExampleSubsystem.
-   */
+/**
+ * Shooter Subsystem
+ *
+ * Just a flywheel motor
+ */
+class ShooterSubsystem(val flywheelMotor: CANSparkMax) : SubsystemBase() {
+    /* default command (don't spin) */
+    override fun periodic() {
+        flywheelMotor.set(0.0)
+    }
 
-  init{
-    var encoder = motor.getEncoder()
-  }
+    /* set a motor speed */
+    fun setSpeed(speed: Double) {
+        flywheelMotor.set(speed)
+    }
 
-  fun setSpeed(speed: Double){
-      motor.set(speed)
-  }
+    fun getPidController(): CANPIDController{
+        return flywheelMotor.getPIDController()
+    }
 
+    fun getEncoder(): CANEncoder{
+        return flywheelMotor.getEncoder()
+    }
 
-  fun getPidController():CANError{
-    return motor.getPIDController()
-  }
-  /**
-   * Will be called periodically whenever the CommandScheduler runs.
-   */
-  override fun periodic() {
-      motor.set(0.0)
-  }
+    fun pidWrite(output: Double){
+        flywheelMotor.pidWrite(output)
+    }
 }
