@@ -25,15 +25,15 @@ private data class ConstantsListener(val func: () -> Unit, val id: Int)
 class Constants {
     companion object {
         val kShooterDir = -1.0
-        val kGateDir = 1.0
+        val kGateDir = -1.0
         val kIntakeDir = 1.0
-        val kIndexerDir = -1.0
+        val kIndexerDir = 1.0
         val kWinchDir = -1.0
 
         val kShooterSpeed = 1.0 * kShooterDir
-        val kGateSpeed = 0.75 * kGateDir
-        val kIntakeSpeed = 0.75 * kIntakeDir
-        val kIndexerSpeed = 0.75 * kIndexerDir
+        val kGateSpeed = 1.0 * kGateDir
+        val kIntakeSpeed = 1.0 * kIntakeDir
+        val kIndexerSpeed = 1.0 * kIndexerDir
         val kWinchDeploySpeed = 1.0 * kWinchDir
 
         val kWinchTriggerThresh = 0.15
@@ -45,6 +45,11 @@ class Constants {
         val kIntakePort = 4
         val kShooterPort = 10
         val kLED0Port = 0
+
+        /* time for shooter to speed up */
+        val kShooterSpinUpTime = 0.75
+        /* wavelength of gate pulsing */
+        val kGatePulseTime = 1.0
 
         val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,

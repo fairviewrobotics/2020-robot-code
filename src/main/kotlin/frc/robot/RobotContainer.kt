@@ -89,8 +89,19 @@ class RobotContainer {
     /** -- more than 5 point autos (hopefully) -- **/
     // power port vision
     val visionHighGoalLineUp = SequentialCommandGroup(
-        VisionHighGoal(drivetrain, -0.3),
-        DriveDoubleSupplier(drivetrain, { -0.3 }, { 0.0 }).withTimeout(0.5)
+        VisionHighGoal(drivetrain, 0.3),
+        DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(0.5),
+        ParallelCommandGroup(
+            SequentialCommandGroup(
+                FixedShooterSpeed(shooter, { Constants.kShooterSpeed }).withTimeout(0.75),
+                ParallelCommandGroup(
+                    FixedGateSpeed(gate, { Constants.kGateSpeed }),
+                    FixedShooterSpeed(shooter, { Constants.kShooterSpeed })
+                )
+            ),
+            FixedIntakeSpeed(intake, { 0.0 }),
+            FixedIndexerSpeed(indexer, { Constants.kIndexerSpeed })
+        ).withTimeout(5.0)
     )
 
 
@@ -124,24 +135,24 @@ class RobotContainer {
         JoystickButton(controller0, kB.value).whenHeld(FixedGateSpeed(gate, { Constants.kGateSpeed * controller0.getY(kLeft) }))
         JoystickButton(controller0, kA.value).whenHeld(FixedShooterSpeed(shooter, { Constants.kShooterSpeed }))
 
-        val runGate = FixedGateSpeed(gate, { Constants.kGateSpeed })
-        val runShooter = FixedShooterSpeed(shooter, { Constants.kShooterSpeed })
+        JoystickButton(controller0, kBumperLeft.value).and(JoystickButton(controller0, kY.value).negate()).whileActiveContinuous(
+            FixedIntakeSpeed(intake, { 0.0 })
+        )
+        JoystickButton(controller0, kBumperLeft.value).and(JoystickButton(controller0, kX.value).negate()).whileActiveContinuous(
+            FixedIndexerSpeed(indexer, { 0.0 })
+        )
 
-        JoystickButton(controller1, kBumperRight.value).and(JoystickButton(controller0, kB.value).negate()).whileActiveOnce(
-            ParallelCommandGroup(
-                SequentialCommandGroup(
-                    runShooter.withTimeout(0.5),
-                    ParallelCommandGroup(
-                        runGate,
-                        runShooter
-                    )
-                ),
-                FixedIntakeSpeed(intake, { 0.0 }),
-                FixedIndexerSpeed(indexer, { 0.0 })
+        JoystickButton(controller1, kBumperRight.value).whileHeld(
+            SequentialCommandGroup(
+                FixedShooterSpeed(shooter, { Constants.kShooterSpeed }).withTimeout(0.5),
+                ParallelCommandGroup(
+                    FixedGateSpeed(gate, { Constants.kGateSpeed }),
+                    FixedShooterSpeed(shooter, { Constants.kShooterSpeed })
+                ).withTimeout(10.0)
             )
         )
 
-        JoystickButton(controller1, kB.value).whenHeld(
+        JoystickButton(controller1, kB.value).whenActive(
             ParallelCommandGroup(
                 FixedWinchSpeed(winch0, { Constants.kWinchDeploySpeed }),
                 FixedWinchSpeed(winch1, { Constants.kWinchDeploySpeed })

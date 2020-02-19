@@ -7,6 +7,7 @@
 
 package frc.robot.commands
 
+import edu.wpi.first.wpilibj.GenericHID
 import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj.XboxController
@@ -20,7 +21,7 @@ class XboxDrive(val driveSubsystem: DrivetrainSubsystem, val controller: XboxCon
     }
 
     override fun execute() {
-        driveSubsystem.driveArcade(-controller.y, controller.x)
+        driveSubsystem.driveArcade(-controller.getY(GenericHID.Hand.kLeft), controller.getX(GenericHID.Hand.kLeft))
     }
 
     override fun end(interrupted: Boolean) {
