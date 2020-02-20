@@ -49,7 +49,7 @@ class Constants {
         /* time for shooter to speed up */
         val kShooterSpinUpTime = 0.75
         /* wavelength of gate pulsing */
-        val kGatePulseTime = 1.0
+        val kGatePulseTime = 0.2
 
         val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,

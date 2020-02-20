@@ -36,6 +36,7 @@ class CompositeShoot(val intakeSubsystem: IntakeSubsystem, val indexerSubsystem:
         indexerSubsystem.setSpeed(Constants.kIndexerSpeed)
         /* run shooter full speed */
         shooterSubsystem.setSpeed(Constants.kShooterSpeed)
+        println(timer.get())
         /* wait for a time to run gate to allow  */
         if(timer.get() > Constants.kShooterSpinUpTime) {
           /* pulse gate to slow down balls going into shooter */
@@ -56,5 +57,5 @@ class CompositeShoot(val intakeSubsystem: IntakeSubsystem, val indexerSubsystem:
         timer.reset()
     }
 
-    override fun isFinished() = false
+    override fun isFinished() = timer.get() >= time
 }

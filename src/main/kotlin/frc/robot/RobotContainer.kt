@@ -12,13 +12,8 @@ import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj.AddressableLED
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.SpeedControllerGroup
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.GenericHID.Hand.*
-import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.XboxController.Button.*
 
 import com.ctre.phoenix.motorcontrol.can.*
@@ -27,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel.MotorType
+import edu.wpi.first.wpilibj.*
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.button.Trigger
 
@@ -91,17 +87,7 @@ class RobotContainer {
     val visionHighGoalLineUp = SequentialCommandGroup(
         VisionHighGoal(drivetrain, 0.3),
         DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(0.5),
-        ParallelCommandGroup(
-            SequentialCommandGroup(
-                FixedShooterSpeed(shooter, { Constants.kShooterSpeed }).withTimeout(0.75),
-                ParallelCommandGroup(
-                    FixedGateSpeed(gate, { Constants.kGateSpeed }),
-                    FixedShooterSpeed(shooter, { Constants.kShooterSpeed })
-                )
-            ),
-            FixedIntakeSpeed(intake, { 0.0 }),
-            FixedIndexerSpeed(indexer, { Constants.kIndexerSpeed })
-        ).withTimeout(5.0)
+        CompositeShoot(intake, indexer, gate, shooter, 5.0)
     )
 
 
@@ -130,26 +116,9 @@ class RobotContainer {
     fun configureButtonBindings() {
         Constants.loadConstants()
         /* controller0 overrides */
-        JoystickButton(controller0, kY.value).whenHeld(FixedIntakeSpeed(intake, { Constants.kIntakeDir * controller0.getY(kLeft) }))
-        JoystickButton(controller0, kX.value).whenHeld(FixedIndexerSpeed(indexer, { Constants.kIndexerSpeed * controller0.getY(kLeft) }))
-        JoystickButton(controller0, kB.value).whenHeld(FixedGateSpeed(gate, { Constants.kGateSpeed * controller0.getY(kLeft) }))
-        JoystickButton(controller0, kA.value).whenHeld(FixedShooterSpeed(shooter, { Constants.kShooterSpeed }))
 
-        JoystickButton(controller0, kBumperLeft.value).and(JoystickButton(controller0, kY.value).negate()).whileActiveContinuous(
-            FixedIntakeSpeed(intake, { 0.0 })
-        )
-        JoystickButton(controller0, kBumperLeft.value).and(JoystickButton(controller0, kX.value).negate()).whileActiveContinuous(
-            FixedIndexerSpeed(indexer, { 0.0 })
-        )
-
-        JoystickButton(controller1, kBumperRight.value).whileHeld(
-            SequentialCommandGroup(
-                FixedShooterSpeed(shooter, { Constants.kShooterSpeed }).withTimeout(0.5),
-                ParallelCommandGroup(
-                    FixedGateSpeed(gate, { Constants.kGateSpeed }),
-                    FixedShooterSpeed(shooter, { Constants.kShooterSpeed })
-                ).withTimeout(10.0)
-            )
+        JoystickButton(controller1, kBumperRight.value).whenHeld(
+            CompositeShoot(intake, indexer, gate, shooter, 5.0)
         )
 
         JoystickButton(controller1, kB.value).whenActive(
@@ -159,22 +128,13 @@ class RobotContainer {
             ).withTimeout(5.0)
         )
 
-        JoystickButton(controller1, kB.value).whenActive(
-            ParallelCommandGroup(
-                FixedIndexerSpeed(indexer, { 0.0 }),
-                FixedIntakeSpeed(intake, { 0.0 })
-            )
-        )
+        /* TODO: cut intake and indexer on climb */
 
-        Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh })
-            .and(JoystickButton(controller1, kB.value).negate())
-            .whileActiveOnce(
+        Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh }).whileActiveOnce(
                 FixedWinchSpeed(winch0, { Constants.kWinchDir * controller1.getTriggerAxis(kLeft) })
             )
 
-        Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh })
-            .and(JoystickButton(controller1, kB.value).negate())
-            .whileActiveOnce(
+        Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh }).whileActiveOnce(
                 FixedWinchSpeed(winch1, { Constants.kWinchDir * controller1.getTriggerAxis(kRight) })
             )
 
@@ -185,11 +145,21 @@ class RobotContainer {
 
         /* setup default commands */
         drivetrain.defaultCommand = XboxDriveCommand
-        gate.defaultCommand = FixedGateSpeed(gate, { 0.0 })
-        shooter.defaultCommand = FixedShooterSpeed(shooter, { 0.0 })
+        gate.defaultCommand = FixedGateSpeed(gate, {
+            if(controller0.bButton) Constants.kGateDir * controller0.getY(kRight) else 0.0
+        })
+        shooter.defaultCommand = FixedShooterSpeed(shooter, {
+            if(controller0.aButton) Constants.kShooterSpeed else 0.0
+        })
 
-        indexer.defaultCommand = FixedIndexerSpeed(indexer, { Constants.kIndexerSpeed })
-        intake.defaultCommand = FixedIntakeSpeed(intake, { Constants.kIntakeSpeed })
+        indexer.defaultCommand = FixedIndexerSpeed(indexer, {
+            if(controller0.getBumper(kLeft)) 0.0 else (
+                if(controller0.xButton) controller0.getY(kRight) * Constants.kIndexerDir else Constants.kIndexerSpeed )
+        })
+        intake.defaultCommand = FixedIntakeSpeed(intake, {
+            if(controller0.getBumper(kLeft)) 0.0 else (
+                if(controller0.yButton) controller0.getY(kRight) * Constants.kIntakeDir else Constants.kIntakeSpeed )
+        })
         lights.defaultCommand = setAlliance
 
         /* set options for autonomous */
