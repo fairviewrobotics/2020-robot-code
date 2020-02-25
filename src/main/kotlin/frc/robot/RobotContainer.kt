@@ -9,6 +9,7 @@ package frc.robot
 
 import frc.robot.commands.*
 import frc.robot.subsystems.*
+import frc.robot.triggers.*
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -59,8 +60,8 @@ class RobotContainer {
     val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_TalonSRX(Constants.kIntake2Port))
     val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
     val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort))
-    //val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
-    //val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
+    val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
+    val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
     val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
 
     /*** --- commands --- ***/
@@ -146,22 +147,22 @@ class RobotContainer {
             CompositeShoot(intake, indexer, gate, shooter, 5.0)
         )
 
-        /*JoystickButton(controller1, kB.value).whenActive(
+        EndgameTrigger().and(JoystickButton(controller1, kB.value)).whenActiveOnce(
             ParallelCommandGroup(
                 FixedWinchSpeed(winch0, { Constants.kWinchDeploySpeed }),
                 FixedWinchSpeed(winch1, { Constants.kWinchDeploySpeed })
             ).withTimeout(5.0)
-        )*/
-
+        )
+      
         /* TODO: cut intake and indexer on climb */
 
-        /*Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh }).whileActiveOnce(
-                FixedWinchSpeed(winch0, { Constants.kWinchDir * controller1.getTriggerAxis(kLeft) })
-            )
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh })).whileActiveOnce(
+            FixedWinchSpeed(winch0, { Constants.kWinchDir * controller1.getTriggerAxis(kLeft) })
+        )
 
-        Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh }).whileActiveOnce(
-                FixedWinchSpeed(winch1, { Constants.kWinchDir * controller1.getTriggerAxis(kRight) })
-            )*/
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh })).whileActiveOnce(
+            FixedWinchSpeed(winch1, { Constants.kWinchDir * controller1.getTriggerAxis(kRight) })
+        )
 
         JoystickButton(controller1, kA.value).whenHeld(visionHighGoalLineUp())
         JoystickButton(controller1, kBumperLeft.value).whenHeld(

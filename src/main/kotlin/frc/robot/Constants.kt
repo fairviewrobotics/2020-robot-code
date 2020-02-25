@@ -47,6 +47,8 @@ class Constants {
         val kIntake2Port = 6
         val kShooterPort = 10
         val kLED0Port = 0
+      
+        val kEndgameStart = 120
 
         /* time for shooter to speed up */
         val kShooterSpinUpTime = 1.5
