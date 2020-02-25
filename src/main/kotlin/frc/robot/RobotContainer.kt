@@ -56,11 +56,11 @@ class RobotContainer {
 
     val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
     val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
-    val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort))
+    val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_TalonSRX(Constants.kIntake2Port))
     val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
     val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort))
-    val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
-    val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
+    //val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
+    //val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
     val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
 
     /*** --- commands --- ***/
@@ -72,22 +72,47 @@ class RobotContainer {
 
     /** --- 5 point autos --- **/
     //backup simple auto
-    val backupAuto = DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(2.0)
+    val backupAuto = DriveDoubleSupplier(drivetrain, { -0.3 }, { 0.0 }).withTimeout(2.0)
     //forward simple auto
-    val forwardAuto = DriveDoubleSupplier(drivetrain, { -0.3 }, { 0.0 }).withTimeout(2.0)
+    val forwardAuto = DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(2.0)
 
     //backup and SPIN!! (looking cool is basically the same thing as winning)
     val spinAuto = SequentialCommandGroup(
-        DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(2.0),
+        DriveDoubleSupplier(drivetrain, { -0.3 }, { 0.0 }).withTimeout(2.0),
         DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.5 }).withTimeout(12.0)
     )
 
     /** -- more than 5 point autos (hopefully) -- **/
     // power port vision
-    val visionHighGoalLineUp = SequentialCommandGroup(
+    val visionHighGoalLineUp = { SequentialCommandGroup(
         VisionHighGoal(drivetrain, 0.3),
         DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(0.5),
         CompositeShoot(intake, indexer, gate, shooter, 5.0)
+    ) }
+
+    val forwardShootAuto = SequentialCommandGroup(
+        DriveDoubleSupplier(drivetrain, { 0.75 }, { 0.0 }).withTimeout(0.2),
+        DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.0 }).withTimeout(1.5),
+        DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(2.5),
+        CompositeShoot(intake, indexer, gate, shooter, 5.0)
+    )
+
+    val forwardShootAutoNoIntake = SequentialCommandGroup(
+        ParallelCommandGroup (
+            SequentialCommandGroup(
+                DriveDoubleSupplier(drivetrain, { 0.45 }, { 0.0 }).withTimeout(0.5),
+		DriveDoubleSupplier(drivetrain, { -0.45 }, {0.0}).withTimeout(0.5),
+                DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.0 }).withTimeout(1.5),
+                DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(3.5)
+            ),
+            FixedIntakeSpeed(intake, { 0.0 }),
+            FixedIndexerSpeed(indexer, { 0.0 })
+        ).withTimeout(6.0),
+        CompositeShoot(intake, indexer, gate, shooter, 5.0),
+        ParallelCommandGroup(
+            FixedIntakeSpeed(intake, { 0.0 }),
+            FixedIndexerSpeed(indexer, { 0.0 })
+        )
     )
 
 
@@ -121,24 +146,30 @@ class RobotContainer {
             CompositeShoot(intake, indexer, gate, shooter, 5.0)
         )
 
-        JoystickButton(controller1, kB.value).whenActive(
+        /*JoystickButton(controller1, kB.value).whenActive(
             ParallelCommandGroup(
                 FixedWinchSpeed(winch0, { Constants.kWinchDeploySpeed }),
                 FixedWinchSpeed(winch1, { Constants.kWinchDeploySpeed })
             ).withTimeout(5.0)
-        )
+        )*/
 
         /* TODO: cut intake and indexer on climb */
 
-        Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh }).whileActiveOnce(
+        /*Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh }).whileActiveOnce(
                 FixedWinchSpeed(winch0, { Constants.kWinchDir * controller1.getTriggerAxis(kLeft) })
             )
 
         Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh }).whileActiveOnce(
                 FixedWinchSpeed(winch1, { Constants.kWinchDir * controller1.getTriggerAxis(kRight) })
-            )
+            )*/
 
-        JoystickButton(controller1, kA.value).whenHeld(visionHighGoalLineUp)
+        JoystickButton(controller1, kA.value).whenHeld(visionHighGoalLineUp())
+        JoystickButton(controller1, kBumperLeft.value).whenHeld(
+            SequentialCommandGroup(
+                visionHighGoalLineUp(),
+                CompositeShoot(intake, indexer, gate, shooter, 5.0)
+            )
+        )
 
         /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
 
@@ -146,27 +177,29 @@ class RobotContainer {
         /* setup default commands */
         drivetrain.defaultCommand = XboxDriveCommand
         gate.defaultCommand = FixedGateSpeed(gate, {
-            if(controller0.bButton) Constants.kGateDir * controller0.getY(kRight) else 0.0
+            if(controller0.bButton) Constants.kGateDir * controller0.getY(kLeft) else 0.0
         })
         shooter.defaultCommand = FixedShooterSpeed(shooter, {
             if(controller0.aButton) Constants.kShooterSpeed else 0.0
         })
 
         indexer.defaultCommand = FixedIndexerSpeed(indexer, {
-            if(controller0.getBumper(kLeft)) 0.0 else (
-                if(controller0.xButton) controller0.getY(kRight) * Constants.kIndexerDir else Constants.kIndexerSpeed )
+            if(controller0.getBumper(kLeft) || controller1.xButton) 0.0 else (
+                if(controller0.xButton) controller0.getY(kLeft) * Constants.kIndexerDir else Constants.kIndexerSpeed )
         })
         intake.defaultCommand = FixedIntakeSpeed(intake, {
-            if(controller0.getBumper(kLeft)) 0.0 else (
-                if(controller0.yButton) controller0.getY(kRight) * Constants.kIntakeDir else Constants.kIntakeSpeed )
+            if(controller0.getBumper(kLeft) || controller1.xButton) 0.0 else (
+                if(controller0.yButton) controller0.getY(kLeft) * Constants.kIntakeDir else Constants.kIntakeSpeed )
         })
         lights.defaultCommand = setAlliance
 
         /* set options for autonomous */
-        m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionHighGoalLineUp)
+        m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionHighGoalLineUp())
         m_autoCommandChooser.addOption("Backup 2s Autonomous", backupAuto)
         m_autoCommandChooser.addOption("Forward 2s Autonomous", forwardAuto)
         m_autoCommandChooser.addOption("Backup 2s and Look Cool Autonomous", spinAuto)
+        m_autoCommandChooser.addOption("Forward 4.5s and Shoot", forwardShootAuto)
+        m_autoCommandChooser.addOption("Forward 4.5s and Shoot No Intake", forwardShootAutoNoIntake)
         m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
 
         SmartDashboard.putData("Auto mode", m_autoCommandChooser)

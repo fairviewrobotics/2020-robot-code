@@ -9,7 +9,7 @@ import frc.robot.Constants
  *
  * Just a intake motor
  */
-class IntakeSubsystem(val motor: SpeedController) : SubsystemBase() {
+class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) : SubsystemBase() {
     /* get a nice speed curve
      * do each speed transition across 20 iterations (400ms)
      */
@@ -20,7 +20,7 @@ class IntakeSubsystem(val motor: SpeedController) : SubsystemBase() {
     var internalTargetSpeed = 0.0
     var speedIncPerT = 0.0
 
-    val curveLen = 20
+    val curveLen = 30
 
     var internalSpeed = 0.0
 
@@ -46,7 +46,8 @@ class IntakeSubsystem(val motor: SpeedController) : SubsystemBase() {
             if (curveCounter >= curveLen) isCurve = false
         }
 
-        motor.set(internalSpeed)
+        motor0.set(internalSpeed)
+        motor1.set(internalSpeed * Constants.kIntake2Dir)
     }
 
     /* default command (don't spin) */
