@@ -41,7 +41,7 @@ class Constants {
     val kIntakePort = 4
     val kShooterPort = 10
     val kLED0Port = 0
-    val ksVolts = 0.0
+    val chassisksVolts = 0.0
     val kvVoltSecondsPerMeter = 0.0
     val kaVoltSecondsSquaredPerMeter = 0.0
     val kPDriveVel = 0.0

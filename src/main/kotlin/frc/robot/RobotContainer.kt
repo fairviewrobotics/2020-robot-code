@@ -157,7 +157,7 @@ class RobotContainer {
     JoystickButton(controller1, kB.value).whenActive(
             ParallelCommandGroup(
                     FixedIndexerSpeed(indexer, { 0.0 }),
-                    FixedIntakeSpeed(intake, { -1.0 })
+                    FixedIntakeSpeed(intake, { -1.0*Constants.kIntakeSpeed })
             )
     )
 
@@ -175,8 +175,9 @@ class RobotContainer {
 
     JoystickButton(controller1, kA.value).whenHeld(visionHighGoalLineUp)
 
-    /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
-    JoystickButton(controller0,kStart.value).whenPressed(cancelAll(sch))
+    JoystickButton(controller0,kStart.value).whenPressed(
+            InstantCommand { sch.cancelAll() }
+    )
 
     /* setup default commands */
     drivetrain.setDefaultCommand(XboxDriveCommand)
@@ -206,7 +207,7 @@ class RobotContainer {
     return m_autoCommandChooser.getSelected()
     /*
     var autoVoltageConstraint = DifferentialDriveVoltageConstraint(
-            SimpleMotorFeedforward(Constants.ksVolts),
+            SimpleMotorFeedforward(Constants.chassisksVolts),
             Constants.kvVoltSecondsPerMeter,
             Constants.kaVoltSecondsSquaredPerMeter
         )

@@ -9,10 +9,8 @@ import com.kauailabs.navx.frc.AHRS
  * TODO: add gyro and encoder handling
  */
 class DrivetrainSubsystem(val drivetrain: DifferentialDrive, val gyroscope: AHRS) : SubsystemBase() {
-    // Accepts the drivetrain type (tank), and the gyroscope type.
     /* default command (don't drive) */
     override fun periodic() {
-        // Sets both sides to 0.
         drivetrain.arcadeDrive(0.0, 0.0)
     }
 
