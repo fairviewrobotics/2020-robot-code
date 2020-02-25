@@ -10,6 +10,7 @@ package frc.robot
 import edu.wpi.first.networktables.*
 import frc.robot.commands.TurnToAngle
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 
 /**
  * Constants Managment:
@@ -40,7 +41,16 @@ class Constants {
     val kIntakePort = 4
     val kShooterPort = 10
     val kLED0Port = 0
-
+    val ksVolts = 0.0
+    val kvVoltSecondsPerMeter = 0.0
+    val kaVoltSecondsSquaredPerMeter = 0.0
+    val kPDriveVel = 0.0
+    val kTrackwidthMeters = 0.0
+    val kMaxSpeedMetersPerSecond = 0.0
+    val kMaxAccelerationMetersPerSecondSquared = 0.0
+    val kRamseteB = 0.0
+    val kRamseteZeta = 0.0
+    val kDriveKinematics:DifferentialDriveKinematics  = DifferentialDriveKinematics(kTrackwidthMeters)
     val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,
             "DrivetrainPID_I" to 0.0,

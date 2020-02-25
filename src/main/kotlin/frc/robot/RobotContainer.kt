@@ -30,6 +30,10 @@ import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel.MotorType
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.button.Trigger
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
+import edu.wpi.first.wpilibj.trajectory.*
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -152,8 +156,8 @@ class RobotContainer {
 
     JoystickButton(controller1, kB.value).whenActive(
             ParallelCommandGroup(
-                    FixedIndexerSpeed(indexer, {0.0}),
-                    FixedIntakeSpeed(intake, {0.0})
+                    FixedIndexerSpeed(indexer, { 0.0 }),
+                    FixedIntakeSpeed(intake, { -1.0 })
             )
     )
 
@@ -200,5 +204,27 @@ class RobotContainer {
   fun getAutonomousCommand(): Command {
     // Return the selected command
     return m_autoCommandChooser.getSelected()
+    /*
+    var autoVoltageConstraint = DifferentialDriveVoltageConstraint(
+            SimpleMotorFeedforward(Constants.ksVolts),
+            Constants.kvVoltSecondsPerMeter,
+            Constants.kaVoltSecondsSquaredPerMeter
+        )
+    //        Constants.kDriveKinematics,
+	//10)
+
+	val config: TrajectoryConfig = TrajectoryConfig(
+		Constants.kMaxSpeedMetersPerSecond,
+		Constants.kMaxAccelerationMetersPerSecondSquared
+	)
+	.setKinematics(Constants.kDriveKinematics)
+	.addConstraint(autoVoltageConstraint)
+	
+	val trajectoryJSON: String = "PathWeaver/Paths/Unnamed.path"
+	val trajectoryPath: Path = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON)
+	val trajectory: Trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath)
+     */
   }
+
+
 }
