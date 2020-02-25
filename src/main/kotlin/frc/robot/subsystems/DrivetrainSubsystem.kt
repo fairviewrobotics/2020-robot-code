@@ -16,12 +16,12 @@ class DrivetrainSubsystem(val drivetrain: DifferentialDrive, val gyroscope: AHRS
 
     /* get angle returned by drivetrain */
     fun getAngle(): Double {
-        return gyroscope.getAngle()
+        return gyroscope.angle
     }
 
     /* return true if gyroscope is connected (gyro commands exit if it is not */
     fun gyroUp(): Boolean {
-        return gyroscope.isConnected()
+        return gyroscope.isConnected
     }
 
     /* simple drive */

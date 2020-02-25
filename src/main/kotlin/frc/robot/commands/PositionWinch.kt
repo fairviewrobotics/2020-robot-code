@@ -17,15 +17,15 @@ import frc.robot.Constants
  * Drive the drivetrain based on a joystick
  */
 class PositionWinch(val winchSubsystem: WinchSubsystem,
-                     val targetPosition: Double) : PIDCommand(
-                            PIDController(
-                                    Constants.constants["WinchPID_P"] ?: 0.035,
-                                    Constants.constants["WinchPID_I"] ?: 0.0,
-                                    Constants.constants["WinchPID_D"] ?: 0.005),
-                            winchSubsystem::getPosition,
-                            targetPosition,
-                            {output: Double -> winchSubsystem.setSpeed(output)},
-                            arrayOf(winchSubsystem)) {
+                    val targetPosition: Double) : PIDCommand(
+    PIDController(
+        Constants.constants["WinchPID_P"] ?: 0.035,
+        Constants.constants["WinchPID_I"] ?: 0.0,
+        Constants.constants["WinchPID_D"] ?: 0.005),
+    winchSubsystem::getPosition,
+    targetPosition,
+    { output: Double -> winchSubsystem.setSpeed(output) },
+    arrayOf(winchSubsystem)) {
     init {
         addRequirements(winchSubsystem)
     }
@@ -43,10 +43,6 @@ class PositionWinch(val winchSubsystem: WinchSubsystem,
     override fun isFinished(): Boolean {
         // check if the position is tolerable
         val error = winchSubsystem.getPosition() - targetPosition
-        if (error <= Constants.constants["WinchPID_PositionTolerance"]?:0.0) {
-            return true
-        } else {
-            return false
-        }
+        return error <= Constants.constants["WinchPID_PositionTolerance"] ?: 0.0
     }
 }
