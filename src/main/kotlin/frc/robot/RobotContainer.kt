@@ -147,7 +147,7 @@ class RobotContainer {
             CompositeShoot(intake, indexer, gate, shooter, 5.0)
         )
 
-        EndgameTrigger().and(JoystickButton(controller1, kB.value)).whenActiveOnce(
+        EndgameTrigger().and(JoystickButton(controller1, kB.value)).whileActiveOnce(
             ParallelCommandGroup(
                 FixedWinchSpeed(winch0, { Constants.kWinchDeploySpeed }),
                 FixedWinchSpeed(winch1, { Constants.kWinchDeploySpeed })
