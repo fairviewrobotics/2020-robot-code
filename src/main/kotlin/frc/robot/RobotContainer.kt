@@ -86,9 +86,14 @@ class RobotContainer {
     /** -- more than 5 point autos (hopefully) -- **/
     // power port vision
     val visionHighGoalLineUp = { SequentialCommandGroup(
+            DriveDoubleSupplier(drivetrain, { 0.75}, { 0.0 }).withTimeout(0.2),
+            DriveDoubleSupplier(drivetrain, { -0.75}, { 0.0 }).withTimeout(0.2),
+            DriveDoubleSupplier(drivetrain, { 0.0 }, {0.0}).withTimeout(1.0),
         VisionHighGoal(drivetrain, 0.3),
         DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(0.5),
-        CompositeShoot(intake, indexer, gate, shooter, 5.0)
+        CompositeShoot(intake, indexer, gate, shooter, Constants.kAutoShootTime),
+            DriveDoubleSupplier(drivetrain, {-0.3}, {0.0}).withTimeout(Constants.kAutoBackupTime),
+            TurnToAngle(drivetrain, drivetrain.getAngle() + 180, 0.0)
     ) }
 
     val forwardShootAuto = SequentialCommandGroup(
@@ -185,12 +190,12 @@ class RobotContainer {
         })
 
         indexer.defaultCommand = FixedIndexerSpeed(indexer, {
-            if(controller0.getBumper(kLeft) || controller1.xButton) 0.0 else (
-                if(controller0.xButton) controller0.getY(kLeft) * Constants.kIndexerDir else Constants.kIndexerSpeed )
+            if(controller0.getBumper(kLeft) || controller1.xButton) Constants.kIndexerSpeed else (
+                if(controller0.xButton) controller0.getY(kLeft) * Constants.kIndexerDir else 0.0 )
         })
         intake.defaultCommand = FixedIntakeSpeed(intake, {
-            if(controller0.getBumper(kLeft) || controller1.xButton) 0.0 else (
-                if(controller0.yButton) controller0.getY(kLeft) * Constants.kIntakeDir else Constants.kIntakeSpeed )
+            if(controller0.getBumper(kRight) || controller1.xButton) Constants.kIntakeSpeed else (
+                if(controller0.yButton) controller0.getY(kLeft) * Constants.kIntakeDir else 0.0 )
         })
         lights.defaultCommand = setAlliance
 

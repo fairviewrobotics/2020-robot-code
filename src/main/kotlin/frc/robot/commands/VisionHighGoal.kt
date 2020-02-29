@@ -24,7 +24,7 @@ class VisionHighGoal(val driveSubsystem: DrivetrainSubsystem, forwardSpeed: Doub
     {
         /* dampen turning */
         /* because the offsets sum over multiple iterations, dampening doesn't make us not hit the target, it just slows turning towards it */
-        var yawOff = yaw.getDouble(0.0) / 1.5
+        var yawOff = yaw.getDouble(0.0) / 1.3
         /* dampen even more if we are making more than a small turn. */
         if (yawOff >= 5.0) {
             yawOff /= 1.5

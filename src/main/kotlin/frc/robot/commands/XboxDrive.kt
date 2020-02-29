@@ -8,9 +8,10 @@
 package frc.robot.commands
 
 import edu.wpi.first.wpilibj.GenericHID
-import frc.robot.subsystems.*
-import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj.XboxController
+import edu.wpi.first.wpilibj2.command.CommandBase
+import frc.robot.subsystems.DrivetrainSubsystem
+import kotlin.math.abs
 
 /**
  * Drive the drivetrain based on a joystick
@@ -20,8 +21,20 @@ class XboxDrive(val driveSubsystem: DrivetrainSubsystem, val controller: XboxCon
         addRequirements(driveSubsystem)
     }
 
+    fun joystickToSpeed(joystickPosSigned: Double): Double {
+        val gainSwitchThresh = 0.25
+        val gainSwitchPos = 0.25
+        val joystickPos = abs(joystickPosSigned)
+        val joystickSign = (joystickPosSigned / joystickPos)
+        return if (joystickPos < gainSwitchThresh) {
+            joystickPosSigned * (gainSwitchPos / gainSwitchThresh)
+        } else {
+            ((joystickPos - gainSwitchThresh) * (joystickPos - gainSwitchThresh) * (joystickPos - gainSwitchThresh) * (joystickPos - gainSwitchThresh) * joystickSign * 1.1) + (gainSwitchPos * joystickSign)
+        }
+    }
+
     override fun execute() {
-        driveSubsystem.driveArcade(-controller.getY(GenericHID.Hand.kLeft), controller.getX(GenericHID.Hand.kLeft))
+        driveSubsystem.driveArcade(-controller.getY(GenericHID.Hand.kLeft), joystickToSpeed(controller.getX(GenericHID.Hand.kRight)), false)
     }
 
     override fun end(interrupted: Boolean) {

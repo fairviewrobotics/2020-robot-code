@@ -28,13 +28,13 @@ class Constants {
         val kGateDir = -1.0
         val kIntakeDir = 1.0
         val kIntake2Dir = -1.0
-        val kIndexerDir = 1.0
+        val kIndexerDir = -1.0
         val kWinchDir = -1.0
 
         val kShooterSpeed = 1.0 * kShooterDir
         val kGateSpeed = 1.0 * kGateDir
         val kIntakeSpeed = 1.0 * kIntakeDir
-        val kIndexerSpeed = 1.0 * kIndexerDir
+        val kIndexerSpeed = 0.75 * kIndexerDir
         val kWinchDeploySpeed = 1.0 * kWinchDir
 
         val kWinchTriggerThresh = 0.15
@@ -50,8 +50,13 @@ class Constants {
       
         val kEndgameStart = 120
 
+        /* time to shoot three balls */
+        val kAutoShootTime = 2.0
+
+        val kAutoBackupTime = 2.5
+
         /* time for shooter to speed up */
-        val kShooterSpinUpTime = 1.5
+        val kShooterSpinUpTime = 0.5
         /* wavelength of gate pulsing */
         val kGatePulseTime = 0.2
 
