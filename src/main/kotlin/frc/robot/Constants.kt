@@ -25,10 +25,10 @@ private data class ConstantsListener(val func: () -> Unit, val id: Int)
 class Constants {
     companion object {
         val kShooterDir = -1.0
-        val kGateDir = -1.0
+        val kGateDir = 1.0
         val kIntakeDir = 1.0
         val kIntake2Dir = -1.0
-        val kIndexerDir = -1.0
+        val kIndexerDir = 1.0
         val kWinchDir = -1.0
 
         val kShooterSpeed = 1.0 * kShooterDir
@@ -47,6 +47,11 @@ class Constants {
         val kIntake2Port = 6
         val kShooterPort = 10
         val kLED0Port = 0
+
+        val kFrontLeftPort = 5
+        val kBackLeftPort = 7
+        val kFrontRightPort = 8
+        val kBackRightPort = 9
       
         val kEndgameStart = 120
 

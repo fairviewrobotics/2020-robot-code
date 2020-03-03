@@ -26,6 +26,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType
 import edu.wpi.first.wpilibj.*
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.button.Trigger
+import com.revrobotics.ColorSensorV3
+import edu.wpi.first.wpilibj.I2C
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -44,10 +46,10 @@ class RobotContainer {
     val controller1 = XboxController(0)
 
     /** --- setup drivetrain --- **/
-    val motorFrontLeft = WPI_TalonSRX(5)
-    val motorBackLeft = WPI_TalonSRX(7)
-    val motorFrontRight = WPI_TalonSRX(8)
-    val motorBackRight = WPI_TalonSRX(9)
+    val motorFrontLeft = WPI_TalonSRX(Constants.kFrontLeftPort)
+    val motorBackLeft = WPI_TalonSRX(Constants.kBackLeftPort)
+    val motorFrontRight = WPI_TalonSRX(Constants.kFrontRightPort)
+    val motorBackRight = WPI_TalonSRX(Constants.kBackRightPort)
 
     /* keep speeds same on motors on each side */
     val motorsLeft = SpeedControllerGroup(motorFrontLeft, motorBackLeft)
@@ -59,7 +61,7 @@ class RobotContainer {
     val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
     val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_TalonSRX(Constants.kIntake2Port))
     val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
-    val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort))
+    val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort), ColorSensorV3(I2C.Port.kOnboard))
     val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
     val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
     val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
