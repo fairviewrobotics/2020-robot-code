@@ -67,7 +67,6 @@ class RobotContainer {
   val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
   val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
   val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
-  val PDP = PDPSubsystem(PowerDistributionPanel(0))
 
   /*** --- commands --- ***/
   //drive by a joystick (controller1)
@@ -179,7 +178,7 @@ class RobotContainer {
     gate.setDefaultCommand(FixedGateSpeed(gate, { 0.0 }))
     shooter.setDefaultCommand(FixedShooterSpeed(shooter, { 0.0 }))
 
-    indexer.setDefaultCommand(FixedIndexerSpeed(indexer, PDP, { -Constants.kIndexerSpeed }))
+    indexer.setDefaultCommand(FixedIndexerSpeed(indexer, { -Constants.kIndexerSpeed }))
     intake.setDefaultCommand(FixedIntakeSpeed(intake, { Constants.kIntakeSpeed }))
     lights.setDefaultCommand(setAlliance)
 
