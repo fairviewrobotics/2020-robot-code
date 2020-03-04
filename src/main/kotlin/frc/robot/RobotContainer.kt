@@ -9,31 +9,25 @@ package frc.robot
 
 import frc.robot.commands.*
 import frc.robot.subsystems.*
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj.AddressableLED
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.SpeedControllerGroup
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.GenericHID.Hand.*
-import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.XboxController.Button.*
 
 import com.ctre.phoenix.motorcontrol.can.*
 import com.kauailabs.navx.frc.AHRS
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel.MotorType
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
+import edu.wpi.first.wpilibj.*
 import edu.wpi.first.wpilibj2.command.button.Trigger
+import kotlin.*
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.*
+import edu.wpi.first.wpilibj2.command.*
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -73,6 +67,7 @@ class RobotContainer {
   val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
   val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
   val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
+  val PDP = PDPSubsystem(PowerDistributionPanel(0))
 
   /*** --- commands --- ***/
   //drive by a joystick (controller1)
@@ -127,7 +122,7 @@ class RobotContainer {
     Constants.loadConstants()
     /* controller0 overrides */
     JoystickButton(controller0, kY.value).whenHeld(FixedIntakeSpeed(intake, { controller0.getY(kLeft) }))
-    JoystickButton(controller0, kX.value).whenHeld(FixedIndexerSpeed(indexer, { -controller0.getY(kLeft) }))
+    JoystickButton(controller0, kX.value).whenHeld(FixedIndexerSpeed(indexer, PDP,{ -controller0.getY(kLeft) }))
     JoystickButton(controller0, kB.value).whenHeld(FixedGateSpeed(gate, { controller0.getY(kLeft) }))
     JoystickButton(controller0, kA.value).whenHeld(FixedShooterSpeed(shooter, { -Constants.kShooterSpeed }))
     val runGate = FixedGateSpeed(gate, { Constants.kGateSpeed })
@@ -143,7 +138,7 @@ class RobotContainer {
                             )
                     ),
                     FixedIntakeSpeed(intake, { 0.0 }),
-                    FixedIndexerSpeed(indexer, { 0.0 })
+                    FixedIndexerSpeed(indexer, PDP,{ 0.0 })
             )
     )
 
@@ -156,7 +151,7 @@ class RobotContainer {
 
     JoystickButton(controller1, kB.value).whenActive(
             ParallelCommandGroup(
-                    FixedIndexerSpeed(indexer, { 0.0 }),
+                    FixedIndexerSpeed(indexer, PDP, { 0.0 }),
                     FixedIntakeSpeed(intake, { -1.0*Constants.kIntakeSpeed })
             )
     )
@@ -176,7 +171,7 @@ class RobotContainer {
     JoystickButton(controller1, kA.value).whenHeld(visionHighGoalLineUp)
 
     JoystickButton(controller0,kStart.value).whenPressed(
-            InstantCommand { sch.cancelAll() }
+            InstantCommand({sch.cancelAll()}, arrayOf<Subsystem>())
     )
 
     /* setup default commands */
@@ -184,7 +179,7 @@ class RobotContainer {
     gate.setDefaultCommand(FixedGateSpeed(gate, { 0.0 }))
     shooter.setDefaultCommand(FixedShooterSpeed(shooter, { 0.0 }))
 
-    indexer.setDefaultCommand(FixedIndexerSpeed(indexer, { -Constants.kIndexerSpeed }))
+    indexer.setDefaultCommand(FixedIndexerSpeed(indexer, PDP, { -Constants.kIndexerSpeed }))
     intake.setDefaultCommand(FixedIntakeSpeed(intake, { Constants.kIntakeSpeed }))
     lights.setDefaultCommand(setAlliance)
 
