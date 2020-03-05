@@ -9,8 +9,12 @@ class WeightedSpeedController(var coeff: Double, val motor: SpeedController) : S
         motor.set(speed * coeff)
     }
 
-    override fun get(): Double {
-        return motor.get() / coeff
+    override fun get(): Double{
+        if (coeff!=0.0){
+            return motor.get()/coeff
+        } else{
+            return motor.get()
+        }
     }
 
     override fun setInverted(isInverted: Boolean) {

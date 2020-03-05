@@ -25,7 +25,9 @@ class DriveDoubleSupplier(val driveSubsystem: DrivetrainSubsystem, val forwardSp
 
     override fun end(interrupted: Boolean) {
         driveSubsystem.driveArcade(0.0, 0.0, true)
+        // stops drivetrain by sending 0 speeds
     }
 
     override fun isFinished() = false
+    // should never be finished 
 }

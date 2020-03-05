@@ -10,6 +10,7 @@ package frc.robot
 import edu.wpi.first.networktables.*
 import frc.robot.commands.TurnToAngle
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 
 /**
  * Constants Managment:
@@ -59,6 +60,16 @@ class Constants {
         val kShooterSpinUpTime = 0.5
         /* wavelength of gate pulsing */
         val kGatePulseTime = 0.2
+
+        /* path following */
+        val leftDrivetrainEncoderPortA = 1
+        val rightDrivetrainEncoderPortA = 2
+        val leftDrivetrainEncoderPortB = 3
+        val rightDrivetrainEncoderPortB = 4
+
+
+        val kDrivetrainEncoderDistancePerPulse = 0.0
+        val kGyroReversed = 1.0
 
         val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,

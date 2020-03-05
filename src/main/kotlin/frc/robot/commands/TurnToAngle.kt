@@ -37,7 +37,6 @@ class TurnToAngle(val driveSubsystem: DrivetrainSubsystem, targetAngle: Double, 
 
 
     override fun isFinished(): Boolean {
-        println("checking isFinished")
         /* if no gyro, fail */
         if (!driveSubsystem.gyroUp()) return true
         /* check if we hit setpoint yet */

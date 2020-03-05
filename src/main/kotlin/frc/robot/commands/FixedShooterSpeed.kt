@@ -11,7 +11,7 @@ import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.CommandBase
 
 /**
- * Drive the drivetrain based on a joystick
+ * Drive the shooter based on a joystick
  */
 class FixedShooterSpeed(val shooterSubsystem: ShooterSubsystem, val wheelSpeed: () -> Double) : CommandBase() {
     init {

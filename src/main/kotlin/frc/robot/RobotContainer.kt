@@ -13,19 +13,18 @@ import frc.robot.triggers.*
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.GenericHID.Hand.*
 import edu.wpi.first.wpilibj.XboxController.Button.*
 
 import com.ctre.phoenix.motorcontrol.can.*
 import com.kauailabs.navx.frc.AHRS
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.button.JoystickButton
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel.MotorType
 import edu.wpi.first.wpilibj.*
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.button.Trigger
+import edu.wpi.first.wpilibj2.command.*
 
 /**
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -34,8 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 class RobotContainer {
-    // The robot's subsystems and commands are defined here...
-
+    val sch = CommandScheduler.getInstance()
     var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
 
     /* controller0 - secondary driver controller */
@@ -49,15 +47,20 @@ class RobotContainer {
     val motorFrontRight = WPI_TalonSRX(8)
     val motorBackRight = WPI_TalonSRX(9)
 
+
     /* keep speeds same on motors on each side */
     val motorsLeft = SpeedControllerGroup(motorFrontLeft, motorBackLeft)
     val motorsRight = SpeedControllerGroup(motorFrontRight, motorBackRight)
 
-    val gyro = AHRS()
 
-    val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
+    val gyro = AHRS()
+    val leftDrivetrainEncoder = Encoder(Constants.leftDrivetrainEncoderPortA, Constants.leftDrivetrainEncoderPortB)
+    val rightDrivetrainencoder = Encoder(Constants.rightDrivetrainEncoderPortA, Constants.rightDrivetrainEncoderPortB)
+
+    val drivetrain = DrivetrainSubsystem(motorsLeft, motorsRight, gyro, leftDrivetrainEncoder, rightDrivetrainencoder)
     val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
     val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_TalonSRX(Constants.kIntake2Port))
+
     val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
     val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort))
     val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
@@ -119,6 +122,7 @@ class RobotContainer {
             FixedIntakeSpeed(intake, { 0.0 }),
             FixedIndexerSpeed(indexer, { 0.0 })
         )
+
     )
 
 
@@ -147,7 +151,6 @@ class RobotContainer {
     fun configureButtonBindings() {
         Constants.loadConstants()
         /* controller0 overrides */
-
         JoystickButton(controller1, kBumperRight.value).whenHeld(
             CompositeShoot(intake, indexer, gate, shooter, 5.0)
         )
@@ -209,10 +212,42 @@ class RobotContainer {
         m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
 
         SmartDashboard.putData("Auto mode", m_autoCommandChooser)
-
     }
 
     fun getAutonomousCommand(): Command {
+        /*var autoVoltageConstraint = DifferentialDriveVoltageConstraint(
+            SimpleMotorFeedforward(Constants.chassisksVolts,
+                Constants.kvVoltSecondsPerMeter,
+                Constants.kaVoltSecondsSquaredPerMeter),
+            Constants.kDriveKinematics,
+            10.0)
+
+        val config: TrajectoryConfig = TrajectoryConfig(
+            Constants.kMaxSpeedMetersPerSecond,
+            Constants.kMaxAccelerationMetersPerSecondSquared
+        )
+            .setKinematics(Constants.kDriveKinematics)
+            .addConstraint(autoVoltageConstraint)
+
+        val trajectoryJSON: String = "PathWeaver/Paths/AutoRoute"
+        val trajectoryPath: Path = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON)
+        val trajectory: Trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath)
+
+        val ramseteCommand: RamseteCommand = RamseteCommand(
+            trajectory,
+            drivetrain::getPose,
+            RamseteController(Constants.kRamseteB,Constants.kRamseteZeta),
+            SimpleMotorFeedforward(Constants.chassisksVolts,
+                Constants.kvVoltSecondsPerMeter,
+                Constants.kaVoltSecondsSquaredPerMeter),
+            Constants.kDriveKinematics,
+            drivetrain::getWheelSpeeds,
+            PIDController(Constants.kPDriveVel,0.0,0.0),
+            PIDController(Constants.kPDriveVel,0.0,0.0),
+            drivetrain::tankDriveVolts,
+            arrayOf<Subsystem>(drivetrain)
+        )*/
+
         // Return the selected command
         return m_autoCommandChooser.selected
     }
