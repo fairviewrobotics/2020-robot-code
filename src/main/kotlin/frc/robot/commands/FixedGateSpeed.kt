@@ -7,11 +7,11 @@
 
 package frc.robot.commands
 
-import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.CommandBase
+import frc.robot.subsystems.GateSubsystem
 
 /**
- * Drive the drivetrain based on a joystick
+ * Run gate subsystem at a fixed speed
  */
 class FixedGateSpeed(val gateSubsystem: GateSubsystem, val speed: () -> Double) : CommandBase() {
     init {

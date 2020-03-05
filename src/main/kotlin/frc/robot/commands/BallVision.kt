@@ -1,13 +1,10 @@
 package frc.robot.commands
 
-import edu.wpi.first.networktables.EntryListenerFlags
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.controller.PIDController
-import edu.wpi.first.wpilibj.livewindow.LiveWindow
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.PIDCommand
 import frc.robot.Constants
+import frc.robot.subsystems.DrivetrainSubsystem
 
 /**
  * The command for the high goal vision targeting algorithm
