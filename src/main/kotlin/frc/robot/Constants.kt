@@ -41,6 +41,11 @@ class Constants {
     val kIntakePort = 4
     val kShooterPort = 10
     val kLED0Port = 0
+    val leftEncoderPortA = 1
+    val rightEncoderPortA = 2
+    val leftEncoderPortB = 3
+    val rightEncoderPortB = 4
+
     val chassisksVolts = 0.0
     val kvVoltSecondsPerMeter = 0.0
     val kaVoltSecondsSquaredPerMeter = 0.0
@@ -50,6 +55,8 @@ class Constants {
     val kMaxAccelerationMetersPerSecondSquared = 0.0
     val kRamseteB = 0.0
     val kRamseteZeta = 0.0
+    val kEncoderDistancePerPulse = 0.0
+    val kGyroReversed = 1.0
     val kDriveKinematics:DifferentialDriveKinematics  = DifferentialDriveKinematics(kTrackwidthMeters)
     val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,
