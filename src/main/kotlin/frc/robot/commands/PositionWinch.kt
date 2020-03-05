@@ -7,11 +7,10 @@
 
 package frc.robot.commands
 
-import frc.robot.subsystems.*
-import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj.controller.PIDController
 import edu.wpi.first.wpilibj2.command.PIDCommand
 import frc.robot.Constants
+import frc.robot.subsystems.WinchSubsystem
 
 /**
  * Drive the drivetrain based on a joystick

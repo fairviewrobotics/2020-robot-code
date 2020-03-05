@@ -3,8 +3,9 @@ package frc.robot.subsystems
 import com.revrobotics.ColorSensorV3
 import edu.wpi.first.wpilibj.SpeedController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj.util.Color
+import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.Constants
 
 
 /**
@@ -13,23 +14,30 @@ import edu.wpi.first.wpilibj.util.Color
  * Just a indexer motor
  */
 class GateSubsystem(val motor: SpeedController, val colorSensor: ColorSensorV3) : SubsystemBase() {
+
     /* default command (don't spin) */
     override fun periodic() {
         setSpeed(0.0)
     }
 
-    /* set a motor speed */
+    /* set a motor speed, no matter if a ball is in the gate or not */
     fun setSpeed(speed: Double) {
         motor.set(speed)
+    }
 
-        val detectedColor: Color = colorSensor.getColor()
+    /* set a speed (only run if a ball isn't in gate) */
+    fun setSpeedSensored(speed: Double) {
+        if (isBallTriggered()) {
+            motor.set(0.0)
+        } else {
+            motor.set(speed)
+        }
+    }
 
-        val IR: Int = colorSensor.getIR()
-
-        SmartDashboard.putNumber("Red", detectedColor.red)
-        SmartDashboard.putNumber("Green", detectedColor.green)
-        SmartDashboard.putNumber("Blue", detectedColor.blue)
-        SmartDashboard.putNumber("IR", IR.toDouble())
-
+    /* check if ball sensor is triggered */
+    fun isBallTriggered(): Boolean {
+        /* TODO: use proximity sensor */
+        val IR = colorSensor.getIR()
+        return IR > (Constants.constants["GateColorSensorThreshold"] ?: 7.0) || IR == 0
     }
 }

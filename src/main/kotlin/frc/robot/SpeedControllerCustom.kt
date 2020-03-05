@@ -1,7 +1,5 @@
 package frc.robot
 
-import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.can.*
 import edu.wpi.first.wpilibj.SpeedController
 
 class WeightedSpeedController(var coeff: Double, val motor: SpeedController) : SpeedController {

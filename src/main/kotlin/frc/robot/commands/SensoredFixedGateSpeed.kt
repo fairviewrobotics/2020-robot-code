@@ -8,24 +8,25 @@
 package frc.robot.commands
 
 import edu.wpi.first.wpilibj2.command.CommandBase
-import frc.robot.subsystems.WinchSubsystem
+import frc.robot.subsystems.GateSubsystem
 
 /**
- * Drive the drivetrain based on a joystick
+ * Run the gate subsystem at a fixed speed until a ball is detected by the gate sensor
  */
-class FixedWinchSpeed(val winchSubsystem: WinchSubsystem, val speed: () -> Double) : CommandBase() {
+class SensoredFixedGateSpeed(val gateSubsystem: GateSubsystem, val speed: () -> Double, val doSensor: () -> Boolean) : CommandBase() {
     init {
-        addRequirements(winchSubsystem)
+        addRequirements(gateSubsystem)
     }
-
 
     override fun execute() {
-        winchSubsystem.setSpeed(speed())
+        if(doSensor())
+            gateSubsystem.setSpeedSensored(speed())
+        else
+            gateSubsystem.setSpeed(speed())
     }
 
-
     override fun end(interrupted: Boolean) {
-        winchSubsystem.setSpeed(0.0)
+        gateSubsystem.setSpeed(0.0)
     }
 
     override fun isFinished() = false
