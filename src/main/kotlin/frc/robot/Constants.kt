@@ -31,17 +31,20 @@ class Constants {
         val kIntake2Dir = -1.0
         val kIndexerDir = -1.0
         val kWinchDir = -1.0
+        val kClimberDir = 1.0
 
         val kShooterSpeed = 1.0 * kShooterDir
         val kGateSpeed = 1.0 * kGateDir
         val kIntakeSpeed = 1.0 * kIntakeDir
         val kIndexerSpeed = 0.75 * kIndexerDir
-        val kWinchDeploySpeed = 1.0 * kWinchDir
+        val kWinchSpeed = 1.0 * kWinchDir
+        val kClimberSpeed = 1.0 * kClimberDir
 
-        val kWinchTriggerThresh = 0.15
+        val kClimberTriggerThresh = 0.15
 
-        val kWinch0Port = 20
-        val kWinch1Port = 21
+        val kWinchPort = 20
+        val kClimberPort = 21
+
         val kGatePort = 2
         val kIndexerPort = 3
         val kIntakePort = 4

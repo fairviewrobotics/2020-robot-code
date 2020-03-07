@@ -63,8 +63,6 @@ class RobotContainer {
 
     val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
     val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort))
-    val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
-    val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
     val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
 
     /*** --- commands --- ***/
@@ -110,7 +108,7 @@ class RobotContainer {
         ParallelCommandGroup (
             SequentialCommandGroup(
                 DriveDoubleSupplier(drivetrain, { 0.45 }, { 0.0 }).withTimeout(0.5),
-		DriveDoubleSupplier(drivetrain, { -0.45 }, {0.0}).withTimeout(0.5),
+		        DriveDoubleSupplier(drivetrain, { -0.45 }, {0.0}).withTimeout(0.5),
                 DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.0 }).withTimeout(1.5),
                 DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(3.5)
             ),
@@ -150,37 +148,14 @@ class RobotContainer {
 
     fun configureButtonBindings() {
         Constants.loadConstants()
-        /* controller0 overrides */
+        /* Shooting and vision lining up */
         JoystickButton(controller1, kBumperRight.value).whenHeld(
             CompositeShoot(intake, indexer, gate, shooter, 5.0)
         )
-
-        EndgameTrigger().and(JoystickButton(controller1, kB.value)).whileActiveOnce(
-            ParallelCommandGroup(
-                FixedWinchSpeed(winch0, { Constants.kWinchDeploySpeed }),
-                FixedWinchSpeed(winch1, { Constants.kWinchDeploySpeed })
-            ).withTimeout(5.0)
-        )
-      
-        /* TODO: cut intake and indexer on climb */
-
-        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh })).whileActiveOnce(
-            FixedWinchSpeed(winch0, { Constants.kWinchDir * controller1.getTriggerAxis(kLeft) })
-        )
-
-        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh })).whileActiveOnce(
-            FixedWinchSpeed(winch1, { Constants.kWinchDir * controller1.getTriggerAxis(kRight) })
-        )
-
-        JoystickButton(controller1, kA.value).whenHeld(visionHighGoalLineUp())
         JoystickButton(controller1, kBumperLeft.value).whenHeld(
-            SequentialCommandGroup(
-                visionHighGoalLineUp(),
-                CompositeShoot(intake, indexer, gate, shooter, 5.0)
-            )
+            visionHighGoalLineUp()
         )
 
-        /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
 
 
         /* setup default commands */
