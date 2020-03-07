@@ -8,6 +8,7 @@
 package frc.robot
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX
 import com.kauailabs.navx.frc.AHRS
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel.MotorType
@@ -20,8 +21,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.*
-import edu.wpi.first.wpilibj2.command.button.JoystickButton
-import edu.wpi.first.wpilibj2.command.button.Trigger
+import edu.wpi.first.wpilibj2.command.button.*
 import frc.robot.commands.*
 import frc.robot.subsystems.*
 import frc.robot.triggers.EndgameTrigger
@@ -33,8 +33,7 @@ import frc.robot.triggers.EndgameTrigger
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 class RobotContainer {
-    // The robot's subsystems and commands are defined here...
-
+    val sch = CommandScheduler.getInstance()
     var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
 
     /* controller0 - secondary driver controller */
@@ -43,26 +42,31 @@ class RobotContainer {
     val controller1 = XboxController(0)
 
     /** --- setup drivetrain --- **/
-    val motorFrontLeft = WPI_TalonSRX(Constants.kFrontLeftPort)
-    val motorBackLeft = WPI_TalonSRX(Constants.kBackLeftPort)
-    val motorFrontRight = WPI_TalonSRX(Constants.kFrontRightPort)
-    val motorBackRight = WPI_TalonSRX(Constants.kBackRightPort)
+    val motorFrontLeft = WPI_TalonSRX(Constants.kDrivetrainFrontLeftPort)
+    val motorBackLeft = WPI_TalonSRX(Constants.kDrivetrainBackLeftPort)
+    val motorFrontRight = WPI_TalonSRX(Constants.kDrivetrainFrontRightPort)
+    val motorBackRight = WPI_TalonSRX(Constants.kDrivetrainBackRightPort)
+
 
     /* keep speeds same on motors on each side */
     val motorsLeft = SpeedControllerGroup(motorFrontLeft, motorBackLeft)
     val motorsRight = SpeedControllerGroup(motorFrontRight, motorBackRight)
 
-    val gyro = AHRS()
 
-    val drivetrain = DrivetrainSubsystem(DifferentialDrive(motorsLeft, motorsRight), gyro)
+    val gyro = AHRS()
+    val leftDrivetrainEncoder = Encoder(Constants.leftDrivetrainEncoderPortA, Constants.leftDrivetrainEncoderPortB)
+    val rightDrivetrainencoder = Encoder(Constants.rightDrivetrainEncoderPortA, Constants.rightDrivetrainEncoderPortB)
+
+    val drivetrain = DrivetrainSubsystem(motorsLeft, motorsRight, gyro, leftDrivetrainEncoder, rightDrivetrainencoder)
     val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
-    val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_TalonSRX(Constants.kIntake2Port))
+    val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_VictorSPX(Constants.kIntake2Port))
+
     val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
     val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort), ColorSensorV3(I2C.Port.kOnboard))
-    val winch0 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch0Port))
-    val winch1 = WinchSubsystem(WPI_TalonSRX(Constants.kWinch1Port))
     val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
 
+    val climber = ClimbSubsystem(WPI_TalonSRX(Constants.kClimberPort))
+    val winch = WinchSubsystem(WPI_TalonSRX(Constants.kWinchPort))
     /*** --- commands --- ***/
     //drive by a joystick (controller1)
     val XboxDriveCommand = XboxDrive(drivetrain, controller1)
@@ -166,33 +170,30 @@ class RobotContainer {
 
     fun configureButtonBindings() {
         Constants.loadConstants()
-        /* controller0 overrides */
-
+        /* Shooting and vision lining up */
         JoystickButton(controller1, kBumperRight.value).whenHeld(
             CompositeShoot(intake, indexer, gate, shooter, 0.0)
         )
 
-        EndgameTrigger().and(JoystickButton(controller1, kB.value)).whileActiveOnce(
-            ParallelCommandGroup(
-                FixedWinchSpeed(winch0, { Constants.kWinchDeploySpeed }),
-                FixedWinchSpeed(winch1, { Constants.kWinchDeploySpeed })
-            ).withTimeout(5.0)
+        JoystickButton(controller1, kBumperLeft.value).whenHeld(
+            visionHighGoalLineUp()
         )
 
-        /* TODO: cut intake and indexer on climb */
-
-        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh })).whileActiveOnce(
-            FixedWinchSpeed(winch0, { Constants.kWinchDir * controller1.getTriggerAxis(kLeft) })
+        EndgameTrigger().and(JoystickButton(controller1, kA.value)).whileActiveOnce(
+            FixedWinchSpeed(winch, { Constants.kWinchSpeed })
         )
 
-        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh })).whileActiveOnce(
-            FixedWinchSpeed(winch1, { Constants.kWinchDir * controller1.getTriggerAxis(kRight) })
+        EndgameTrigger().and(JoystickButton(controller1, kY.value)).whileActiveOnce(
+            FixedWinchSpeed(winch, { -Constants.kWinchSpeed })
         )
 
-        JoystickButton(controller1, kBumperLeft.value).whenHeld(visionHighGoalLineUp())
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) > Constants.kClimberTriggerThresh })).whileActiveOnce(
+            FixedClimbSpeed(climber, { Constants.kClimberSpeed * controller1.getTriggerAxis(kLeft) })
+        )
 
-        /* TODO: a button to cancel all active commands and return each subsystem to default command (if things go wrong) */
-
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) > Constants.kClimberTriggerThresh })).whileActiveOnce(
+            FixedClimbSpeed(climber, { -Constants.kClimberSpeed * controller1.getTriggerAxis(kRight) })
+        )
 
         /* setup default commands */
         drivetrain.defaultCommand = XboxDriveCommand
@@ -218,14 +219,14 @@ class RobotContainer {
         /* default indexer - run forward on left bumper, backwards on left trigger */
         indexer.defaultCommand = FixedIndexerSpeed(indexer, {
             if (controller0.getBumper(kLeft) || controller1.xButton) Constants.kIndexerSpeed else (
-                if (controller0.getTriggerAxis(kLeft) >= Constants.kWinchTriggerThresh)
+                if (controller0.getTriggerAxis(kLeft) >= Constants.kTriggerThresh)
                     controller0.getTriggerAxis(kLeft) * -Constants.kIndexerDir else 0.0)
         })
 
         /* default intake - run forward on right bumper, backwards on right trigger */
         intake.defaultCommand = FixedIntakeSpeed(intake, {
             if (controller0.getBumper(kRight) || controller1.xButton) Constants.kIntakeSpeed else (
-                if (controller0.getTriggerAxis(kRight) >= Constants.kWinchTriggerThresh)
+                if (controller0.getTriggerAxis(kRight) >= Constants.kTriggerThresh)
                     controller0.getTriggerAxis(kRight) * -Constants.kIntakeDir else 0.0)
         })
         lights.defaultCommand = setAlliance
@@ -238,10 +239,42 @@ class RobotContainer {
         m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
 
         SmartDashboard.putData("Auto mode", m_autoCommandChooser)
-
     }
 
     fun getAutonomousCommand(): Command {
+        /*var autoVoltageConstraint = DifferentialDriveVoltageConstraint(
+            SimpleMotorFeedforward(Constants.chassisksVolts,
+                Constants.kvVoltSecondsPerMeter,
+                Constants.kaVoltSecondsSquaredPerMeter),
+            Constants.kDriveKinematics,
+            10.0)
+
+        val config: TrajectoryConfig = TrajectoryConfig(
+            Constants.kMaxSpeedMetersPerSecond,
+            Constants.kMaxAccelerationMetersPerSecondSquared
+        )
+            .setKinematics(Constants.kDriveKinematics)
+            .addConstraint(autoVoltageConstraint)
+
+        val trajectoryJSON: String = "PathWeaver/Paths/AutoRoute"
+        val trajectoryPath: Path = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON)
+        val trajectory: Trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath)
+
+        val ramseteCommand: RamseteCommand = RamseteCommand(
+            trajectory,
+            drivetrain::getPose,
+            RamseteController(Constants.kRamseteB,Constants.kRamseteZeta),
+            SimpleMotorFeedforward(Constants.chassisksVolts,
+                Constants.kvVoltSecondsPerMeter,
+                Constants.kaVoltSecondsSquaredPerMeter),
+            Constants.kDriveKinematics,
+            drivetrain::getWheelSpeeds,
+            PIDController(Constants.kPDriveVel,0.0,0.0),
+            PIDController(Constants.kPDriveVel,0.0,0.0),
+            drivetrain::tankDriveVolts,
+            arrayOf<Subsystem>(drivetrain)
+        )*/
+
         // Return the selected command
         return m_autoCommandChooser.selected
     }

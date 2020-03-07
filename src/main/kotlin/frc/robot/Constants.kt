@@ -29,32 +29,35 @@ class Constants {
         val kIntakeDir = 1.0
         val kIntake2Dir = -1.0
         val kIndexerDir = 1.0
-        val kWinchDir = -1.0
+        val kWinchDir = 1.0
+        val kClimberDir = 1.0
 
         val kShooterSpeed = 1.0 * kShooterDir
         val kShooterReverseSpeed = -0.3 * kShooterDir
         val kGateSpeed = 1.0 * kGateDir
+        val kGateLoadSpeed = 0.5 * kGateDir
         val kIntakeSpeed = 1.0 * kIntakeDir
         val kIndexerSpeed = 0.75 * kIndexerDir
-        val kWinchDeploySpeed = 1.0 * kWinchDir
+        val kWinchSpeed = 1.0 * kWinchDir
+        val kClimberSpeed = 0.5 * kClimberDir
 
-        val kGateLoadSpeed = 0.5 * kGateDir
+        val kClimberTriggerThresh = 0.15
+        val kTriggerThresh = 0.15
 
-        val kWinchTriggerThresh = 0.15
+        val kWinchPort = 12
+        val kClimberPort = 6
 
-        val kWinch0Port = 20
-        val kWinch1Port = 21
         val kGatePort = 2
         val kIndexerPort = 3
         val kIntakePort = 4
-        val kIntake2Port = 6
+        val kIntake2Port = 11
         val kShooterPort = 10
         val kLED0Port = 0
 
-        val kFrontLeftPort = 5
-        val kBackLeftPort = 7
-        val kFrontRightPort = 8
-        val kBackRightPort = 9
+        val kDrivetrainFrontLeftPort = 5
+        val kDrivetrainBackLeftPort = 7
+        val kDrivetrainFrontRightPort = 8
+        val kDrivetrainBackRightPort = 9
 
         val kEndgameStart = 120
 
@@ -67,6 +70,16 @@ class Constants {
         val kShooterSpinUpTime = 0.5
         /* wavelength of gate pulsing */
         val kGatePulseTime = 0.2
+
+        /* path following */
+        val leftDrivetrainEncoderPortA = 1
+        val rightDrivetrainEncoderPortA = 2
+        val leftDrivetrainEncoderPortB = 3
+        val rightDrivetrainEncoderPortB = 4
+
+
+        val kDrivetrainEncoderDistancePerPulse = 0.0
+        val kGyroReversed = 1.0
 
         val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,

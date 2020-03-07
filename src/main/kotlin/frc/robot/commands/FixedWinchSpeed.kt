@@ -10,23 +10,19 @@ package frc.robot.commands
 import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.subsystems.WinchSubsystem
 
-/**
- * Drive the drivetrain based on a joystick
- */
-class FixedWinchSpeed(val winchSubsystem: WinchSubsystem, val speed: () -> Double) : CommandBase() {
+class FixedWinchSpeed(val winch: WinchSubsystem, val speed: () -> Double) : CommandBase() {
+    /**
+     * @param m_subsystem The subsystem used by this command.
+     */
     init {
-        addRequirements(winchSubsystem)
+        addRequirements(winch)
     }
 
-
+    // Called every time the scheduler runs while the command is scheduled.
     override fun execute() {
-        winchSubsystem.setSpeed(speed())
+        winch.setWinch(speed())
     }
 
-
-    override fun end(interrupted: Boolean) {
-        winchSubsystem.setSpeed(0.0)
-    }
-
+    // Returns true when the command should end.
     override fun isFinished() = false
 }
