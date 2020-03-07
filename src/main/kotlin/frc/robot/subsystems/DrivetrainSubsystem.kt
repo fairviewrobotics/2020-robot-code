@@ -1,14 +1,14 @@
 package frc.robot.subsystems
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj.drive.DifferentialDrive
-import edu.wpi.first.wpilibj.Encoder
 import com.kauailabs.navx.frc.AHRS
+import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.SpeedControllerGroup
+import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.geometry.Pose2d
 import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
 import kotlin.math.IEEErem
 
@@ -20,7 +20,7 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
     val drivetrain = DifferentialDrive(leftSpeedController, rightSpeedController)
     var odometry = DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()))
 
-    init{
+    init {
         leftEncoder.setDistancePerPulse(Constants.kDrivetrainEncoderDistancePerPulse)
         rightEncoder.setDistancePerPulse(Constants.kDrivetrainEncoderDistancePerPulse)
         resetEncoders()
@@ -41,12 +41,12 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
         odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()))
     }
 
-    fun tankDriveVolts(leftVolts: Double, rightVolts: Double){
+    fun tankDriveVolts(leftVolts: Double, rightVolts: Double) {
         leftSpeedController.setVoltage(leftVolts)
         rightSpeedController.setVoltage(-rightVolts)
     }
 
-    fun resetEncoders(){
+    fun resetEncoders() {
         leftEncoder.reset()
         rightEncoder.reset()
     }
@@ -54,7 +54,7 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
     fun getAverageEncoderDistance() =
         (leftEncoder.distance + rightEncoder.distance) / 2.0
 
-    fun setMaxOutput(maxOutput: Double){
+    fun setMaxOutput(maxOutput: Double) {
         drivetrain.setMaxOutput(maxOutput)
     }
 
@@ -63,7 +63,7 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
         updateOdometry()
     }
 
-    fun resetGyro(){
+    fun resetGyro() {
         gyroscope.reset()
     }
 
@@ -73,7 +73,7 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
     }
 
     /* get normalized angle returned by gyroscope */
-    fun getHeading(): Double{
+    fun getHeading(): Double {
         return gyroscope.angle.IEEErem(360.0) * Constants.kGyroReversed
     }
 

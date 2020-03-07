@@ -7,10 +7,9 @@
 
 package frc.robot
 
-import edu.wpi.first.networktables.*
-import frc.robot.commands.TurnToAngle
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
+import edu.wpi.first.networktables.EntryListenerFlags
+import edu.wpi.first.networktables.NetworkTable
+import edu.wpi.first.networktables.NetworkTableInstance
 
 /**
  * Constants Managment:
@@ -26,11 +25,11 @@ private data class ConstantsListener(val func: () -> Unit, val id: Int)
 class Constants {
     companion object {
         val kShooterDir = -1.0
-        val kGateDir = -1.0
+        val kGateDir = 1.0
         val kIntakeDir = 1.0
         val kIntake2Dir = -1.0
-        val kIndexerDir = -1.0
-        val kWinchDir = -1.0
+        val kIndexerDir = 1.0
+        val kWinchDir = 1.0
         val kClimberDir = 1.0
 
         val kShooterSpeed = 1.0 * kShooterDir
@@ -38,17 +37,17 @@ class Constants {
         val kIntakeSpeed = 1.0 * kIntakeDir
         val kIndexerSpeed = 0.75 * kIndexerDir
         val kWinchSpeed = 1.0 * kWinchDir
-        val kClimberSpeed = 1.0 * kClimberDir
+        val kClimberSpeed = 0.5 * kClimberDir
 
         val kClimberTriggerThresh = 0.15
 
-        val kWinchPort = 20
-        val kClimberPort = 21
+        val kWinchPort = 12
+        val kClimberPort = 6
 
         val kGatePort = 2
         val kIndexerPort = 3
         val kIntakePort = 4
-        val kIntake2Port = 6
+        val kIntake2Port = 11
         val kShooterPort = 10
         val kLED0Port = 0
 

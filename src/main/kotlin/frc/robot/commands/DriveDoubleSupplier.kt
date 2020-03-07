@@ -7,9 +7,8 @@
 
 package frc.robot.commands
 
-import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.CommandBase
-import java.util.function.DoubleSupplier
+import frc.robot.subsystems.DrivetrainSubsystem
 
 /**
  * Drive the drivetrain based on a joystick

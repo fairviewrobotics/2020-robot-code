@@ -7,15 +7,15 @@
 
 package frc.robot.subsystems
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj.SpeedController
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 
 class WinchSubsystem(val winchMotor: SpeedController) : SubsystemBase() {
     override fun periodic() {
         winchMotor.set(0.0)
     }
 
-    fun setWinch(speed: Double){
+    fun setWinch(speed: Double) {
         winchMotor.set(speed)
     }
 

@@ -1,7 +1,5 @@
 package frc.robot
 
-import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.can.*
 import edu.wpi.first.wpilibj.SpeedController
 
 class WeightedSpeedController(var coeff: Double, val motor: SpeedController) : SpeedController {
@@ -9,10 +7,10 @@ class WeightedSpeedController(var coeff: Double, val motor: SpeedController) : S
         motor.set(speed * coeff)
     }
 
-    override fun get(): Double{
-        if (coeff!=0.0){
-            return motor.get()/coeff
-        } else{
+    override fun get(): Double {
+        if (coeff != 0.0) {
+            return motor.get() / coeff
+        } else {
             return motor.get()
         }
     }

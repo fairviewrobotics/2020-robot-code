@@ -7,16 +7,20 @@
 
 package frc.robot.commands
 
-import frc.robot.*
-import frc.robot.subsystems.*
-import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj2.command.CommandBase
+import frc.robot.Constants
+import frc.robot.subsystems.GateSubsystem
+import frc.robot.subsystems.IndexerSubsystem
+import frc.robot.subsystems.IntakeSubsystem
+import frc.robot.subsystems.ShooterSubsystem
 
 /**
- * Run a composite shoot on the whole intake through shooter 
+ * Run a composite shoot on the whole intake through shooter
  */
 class CompositeShoot(val intakeSubsystem: IntakeSubsystem, val indexerSubsystem: IndexerSubsystem, val gateSubsystem: GateSubsystem, val shooterSubsystem: ShooterSubsystem, val time: Double) : CommandBase() {
-    val timer = Timer() 
+    val timer = Timer()
+
     init {
         addRequirements(intakeSubsystem)
         addRequirements(indexerSubsystem)
@@ -38,15 +42,15 @@ class CompositeShoot(val intakeSubsystem: IntakeSubsystem, val indexerSubsystem:
         shooterSubsystem.setSpeed(Constants.kShooterSpeed)
         println(timer.get())
         /* wait for a time to run gate to allow  */
-        if(timer.get() > Constants.kShooterSpinUpTime) {
-          /* pulse gate to slow down balls going into shooter */
-          if(timer.get() % Constants.kGatePulseTime < Constants.kGatePulseTime/2) {
-            gateSubsystem.setSpeed(Constants.kGateSpeed)
-          } else {
-            gateSubsystem.setSpeed(0.0)
-          }
+        if (timer.get() > Constants.kShooterSpinUpTime) {
+            /* pulse gate to slow down balls going into shooter */
+            if (timer.get() % Constants.kGatePulseTime < Constants.kGatePulseTime / 2) {
+                gateSubsystem.setSpeed(Constants.kGateSpeed)
+            } else {
+                gateSubsystem.setSpeed(0.0)
+            }
         } else {
-          gateSubsystem.setSpeed(0.0)
+            gateSubsystem.setSpeed(0.0)
         }
     }
 

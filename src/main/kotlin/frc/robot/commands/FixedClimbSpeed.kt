@@ -7,10 +7,10 @@
 
 package frc.robot.commands
 
-import frc.robot.subsystems.*
 import edu.wpi.first.wpilibj2.command.CommandBase
+import frc.robot.subsystems.ClimbSubsystem
 
-class FixedClimbSpeed(val climber: ClimbSubsystem, val speed: () -> Double ) : CommandBase() {
+class FixedClimbSpeed(val climber: ClimbSubsystem, val speed: () -> Double) : CommandBase() {
     /**
      * @param m_subsystem The subsystem used by this command.
      */
