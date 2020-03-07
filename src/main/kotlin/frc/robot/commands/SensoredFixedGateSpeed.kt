@@ -11,15 +11,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase
 import frc.robot.subsystems.GateSubsystem
 
 /**
- * Run gate subsystem at a fixed speed
+ * Run the gate subsystem at a fixed speed until a ball is detected by the gate sensor
  */
-class FixedGateSpeed(val gateSubsystem: GateSubsystem, val speed: () -> Double) : CommandBase() {
+class SensoredFixedGateSpeed(val gateSubsystem: GateSubsystem, val speed: () -> Double, val doSensor: () -> Boolean) : CommandBase() {
     init {
         addRequirements(gateSubsystem)
     }
 
     override fun execute() {
-        gateSubsystem.setSpeed(speed())
+        if(doSensor())
+            gateSubsystem.setSpeedSensored(speed())
+        else
+            gateSubsystem.setSpeed(speed())
     }
 
     override fun end(interrupted: Boolean) {

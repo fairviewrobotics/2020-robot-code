@@ -32,6 +32,9 @@ class VisionHighGoal(val driveSubsystem: DrivetrainSubsystem, forwardSpeed: Doub
     { output: Double -> driveSubsystem.driveArcade(forwardSpeed, output) },
     arrayOf(driveSubsystem)) {
 
+    var pTarget = true
+    var ppTarget = true
+
     companion object {
         val ntInst = NetworkTableInstance.getDefault()
         val table = ntInst.getTable("high-vision")
@@ -59,13 +62,18 @@ class VisionHighGoal(val driveSubsystem: DrivetrainSubsystem, forwardSpeed: Doub
     }
 
     override fun isFinished(): Boolean {
-
         /* if no gyro, fail */
         if (!driveSubsystem.gyroUp()) return true
-        //return getController().atSetpoint()
+
+
         /* if we can't see a vision target, stop */
-        /* TODO: require no vision target for two or three frames before stopping */
-        if (!isTarget.getBoolean(false)) return true
+        val targetFound = isTarget.getBoolean(false)
+        if (!targetFound && !pTarget && !ppTarget) return true
+
+        val tmp = pTarget
+        pTarget = targetFound
+        ppTarget = tmp
+
         if (targetAtTopImage.getBoolean(false)) return true
         return false
     }

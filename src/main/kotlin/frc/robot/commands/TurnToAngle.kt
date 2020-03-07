@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.PIDCommand
 import frc.robot.Constants
 import frc.robot.subsystems.DrivetrainSubsystem
 
-class TurnToAngle(val driveSubsystem: DrivetrainSubsystem, targetAngle: Double, forwardSpeed: Double) : PIDCommand(
+class TurnToAngle(val driveSubsystem: DrivetrainSubsystem, targetAngle: () -> Double, forwardSpeed: Double) : PIDCommand(
     PIDController(
         Constants.constants["DrivetrainPID_P"] ?: 0.035,
         Constants.constants["DrivetrainPID_I"] ?: 0.0,
@@ -16,8 +16,10 @@ class TurnToAngle(val driveSubsystem: DrivetrainSubsystem, targetAngle: Double, 
     { output: Double -> driveSubsystem.driveArcade(forwardSpeed, output) },
     arrayOf(driveSubsystem)) {
 
+    val initialAngle: Double
 
     init {
+        initialAngle = driveSubsystem.getAngle()
         controller.enableContinuousInput(-180.0, 180.0)
         /** reload pid parameters from network tables */
         setPIDParams()

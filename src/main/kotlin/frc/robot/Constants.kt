@@ -33,13 +33,16 @@ class Constants {
         val kClimberDir = 1.0
 
         val kShooterSpeed = 1.0 * kShooterDir
+        val kShooterReverseSpeed = -0.3 * kShooterDir
         val kGateSpeed = 1.0 * kGateDir
+        val kGateLoadSpeed = 0.5 * kGateDir
         val kIntakeSpeed = 1.0 * kIntakeDir
         val kIndexerSpeed = 0.75 * kIndexerDir
         val kWinchSpeed = 1.0 * kWinchDir
         val kClimberSpeed = 0.5 * kClimberDir
 
         val kClimberTriggerThresh = 0.15
+        val kTriggerThresh = 0.15
 
         val kWinchPort = 12
         val kClimberPort = 6
@@ -59,9 +62,9 @@ class Constants {
         val kEndgameStart = 120
 
         /* time to shoot three balls */
-        val kAutoShootTime = 2.0
+        val kAutoShootTime = 2.5
 
-        val kAutoBackupTime = 2.5
+        val kAutoBackupTime = 1.0
 
         /* time for shooter to speed up */
         val kShooterSpinUpTime = 0.5
@@ -89,7 +92,8 @@ class Constants {
             "WinchPID_P" to 0.035,
             "WinchPID_I" to 0.0,
             "WinchPID_D" to 0.005,
-            "WinchPID_PositionTolerance" to 1.0
+            "WinchPID_PositionTolerance" to 1.0,
+            "GateColorSensorThreshold" to 7.0
         )
 
         /** NetworkTables Constants Management **/
