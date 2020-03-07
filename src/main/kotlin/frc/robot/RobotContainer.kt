@@ -65,6 +65,8 @@ class RobotContainer {
     val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort))
     val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
 
+    val climber = ClimbSubsystem(WPI_TalonSRX(Constants.kClimberPort))
+    val winch = WinchSubsystem(WPI_TalonSRX(Constants.kWinchPort))
     /*** --- commands --- ***/
     //drive by a joystick (controller1)
     val XboxDriveCommand = XboxDrive(drivetrain, controller1)
@@ -155,6 +157,18 @@ class RobotContainer {
         JoystickButton(controller1, kBumperLeft.value).whenHeld(
             visionHighGoalLineUp()
         )
+        EndgameTrigger().and(JoystickButton(controller1, kA.value)).whileActiveOnce(
+            FixedWinchSpeed(winch, { Constants.kWinchSpeed })
+        )
+
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) > Constants.kClimberTriggerThresh })).whileActiveOnce(
+                FixedClimbSpeed(climber, { Constants.kClimberSpeed * controller1.getTriggerAxis(kLeft) })
+        )
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) > Constants.kClimberTriggerThresh })).whileActiveOnce(
+                FixedClimbSpeed(climber, { -1 * Constants.kClimberSpeed * controller1.getTriggerAxis(kRight) })
+        )
+
+
 
 
 
