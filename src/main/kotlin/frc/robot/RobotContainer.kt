@@ -42,10 +42,10 @@ class RobotContainer {
     val controller1 = XboxController(0)
 
     /** --- setup drivetrain --- **/
-    val motorFrontLeft = WPI_TalonSRX(5)
-    val motorBackLeft = WPI_TalonSRX(7)
-    val motorFrontRight = WPI_TalonSRX(8)
-    val motorBackRight = WPI_TalonSRX(9)
+    val motorFrontLeft = WPI_TalonSRX(Constants.kDrivetrainFrontLeftPort)
+    val motorBackLeft = WPI_TalonSRX(Constants.kDrivetrainBackLeftPort)
+    val motorFrontRight = WPI_TalonSRX(Constants.kDrivetrainFrontRightPort)
+    val motorBackRight = WPI_TalonSRX(Constants.kDrivetrainBackRightPort)
 
 
     /* keep speeds same on motors on each side */

@@ -48,7 +48,12 @@ class Constants {
         val kIntake2Port = 6
         val kShooterPort = 10
         val kLED0Port = 0
-      
+
+        val kDrivetrainFrontLeftPort = 5
+        val kDrivetrainBackLeftPort = 7
+        val kDrivetrainFrontRightPort = 8
+        val kDrivetrainBackRightPort = 9
+
         val kEndgameStart = 120
 
         /* time to shoot three balls */
