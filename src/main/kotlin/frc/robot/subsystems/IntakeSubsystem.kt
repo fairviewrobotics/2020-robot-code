@@ -50,15 +50,12 @@ class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) 
         motor1.set(internalSpeed * Constants.kIntake2Dir)
     }
 
-    /* default command (don't spin) */
     override fun periodic() {
-        setTargetSpeed(0.0)
         updateSpeedCurve()
     }
 
     /* set a motor speed */
     fun setSpeed(speed: Double) {
         setTargetSpeed(speed)
-        updateSpeedCurve()
     }
 }

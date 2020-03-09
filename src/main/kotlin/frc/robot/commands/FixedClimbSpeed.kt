@@ -23,6 +23,10 @@ class FixedClimbSpeed(val climber: ClimbSubsystem, val speed: () -> Double) : Co
         climber.setClimber(speed())
     }
 
+    override fun end(interrupted: Boolean) {
+        climber.setClimber(0.0)
+    }
+
     // Returns true when the command should end.
     override fun isFinished() = false
 }

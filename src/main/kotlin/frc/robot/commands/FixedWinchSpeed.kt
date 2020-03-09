@@ -23,6 +23,10 @@ class FixedWinchSpeed(val winch: WinchSubsystem, val speed: () -> Double) : Comm
         winch.setWinch(speed())
     }
 
+    override fun end(interrupted: Boolean) {
+        winch.setWinch(0.0)
+    }
+
     // Returns true when the command should end.
     override fun isFinished() = false
 }

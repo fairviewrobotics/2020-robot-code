@@ -11,9 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
  * Just a flywheel motor
  */
 class ShooterSubsystem(val flywheelMotor: CANSparkMax) : SubsystemBase() {
-    /* default command (don't spin) */
     override fun periodic() {
-        flywheelMotor.set(0.0)
     }
 
     /* set a motor speed */
