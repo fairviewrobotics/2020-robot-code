@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Constants
 import kotlin.math.IEEErem
 
@@ -44,6 +45,8 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
     fun tankDriveVolts(leftVolts: Double, rightVolts: Double) {
         leftSpeedController.setVoltage(leftVolts)
         rightSpeedController.setVoltage(-rightVolts)
+        drivetrain.feed()
+        debugStatus() 
     }
 
     fun resetEncoders() {
@@ -59,8 +62,8 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
     }
 
     override fun periodic() {
-        drivetrain.arcadeDrive(0.0, 0.0, false)
         updateOdometry()
+        debugStatus() 
     }
 
     fun resetGyro() {
@@ -86,10 +89,14 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
         return gyroscope.isConnected
     }
 
+    /* put status of gyroscope onto smartdashboard (needed for selecting auto) */
+    fun debugStatus() {
+        SmartDashboard.putBoolean("Gyroscope", gyroscope.isConnected)
+    }
+
     /* simple drive */
     fun driveArcade(forwardSpeed: Double, turnSpeed: Double, squareInputs: Boolean = false) {
         setMaxOutput(1.0)
-        updateOdometry()
         drivetrain.arcadeDrive(forwardSpeed, turnSpeed, squareInputs)
     }
 }

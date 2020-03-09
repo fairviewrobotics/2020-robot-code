@@ -15,9 +15,8 @@ import frc.robot.Constants
  */
 class GateSubsystem(val motor: SpeedController, val colorSensor: ColorSensorV3) : SubsystemBase() {
 
-    /* default command (don't spin) */
     override fun periodic() {
-        setSpeed(0.0)
+        debugMeasurment()
     }
 
     /* set a motor speed, no matter if a ball is in the gate or not */
@@ -36,8 +35,13 @@ class GateSubsystem(val motor: SpeedController, val colorSensor: ColorSensorV3) 
 
     /* check if ball sensor is triggered */
     fun isBallTriggered(): Boolean {
-        /* TODO: use proximity sensor */
         val IR = colorSensor.getIR()
         return IR > (Constants.constants["GateColorSensorThreshold"] ?: 7.0) || IR == 0
+    }
+
+    /* print status of sensor + its reading */
+    fun debugMeasurment() {
+        SmartDashboard.putBoolean("Gate Ball Sensor", colorSensor.getIR() != 0)
+        SmartDashboard.putNumber("Gate Ball Sensor Reading", colorSensor.getIR().toDouble())
     }
 }

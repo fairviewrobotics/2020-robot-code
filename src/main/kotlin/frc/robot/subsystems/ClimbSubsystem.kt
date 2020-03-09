@@ -11,9 +11,7 @@ import edu.wpi.first.wpilibj.SpeedController
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 
 class ClimbSubsystem(val climbMotor: SpeedController) : SubsystemBase() {
-    override fun periodic() {
-        climbMotor.set(0.0)
-    }
+    override fun periodic() {}
 
     fun setClimber(speed: Double) {
         climbMotor.set(speed)

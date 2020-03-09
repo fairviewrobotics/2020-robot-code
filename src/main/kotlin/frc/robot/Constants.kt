@@ -10,6 +10,7 @@ package frc.robot
 import edu.wpi.first.networktables.EntryListenerFlags
 import edu.wpi.first.networktables.NetworkTable
 import edu.wpi.first.networktables.NetworkTableInstance
+import edu.wpi.first.wpilibj.kinematics.*
 
 /**
  * Constants Managment:
@@ -71,15 +72,39 @@ class Constants {
         /* wavelength of gate pulsing */
         val kGatePulseTime = 0.2
 
-        /* path following */
+        /* path following ****UNTUNED**** */
+
+        /* encoder ports */
         val leftDrivetrainEncoderPortA = 1
         val rightDrivetrainEncoderPortA = 2
         val leftDrivetrainEncoderPortB = 3
         val rightDrivetrainEncoderPortB = 4
 
+        val kDrivetrainEncoderAReversed = false
+        val kDrivetrainEncoderBReversed = false
+        /* encoder characteristics */
+        val kDrivetrainEncoderDistancePerPulse = 1.0
+        val kGyroReversed = -1.0
 
-        val kDrivetrainEncoderDistancePerPulse = 0.0
-        val kGyroReversed = 1.0
+        /* feedforward pathfollowing gains */
+        val ksVolts = 0.22
+        val kvVoltSecondsPerMeter = 1.98
+        val kaVoltSecondsSquaredPerMeter = 0.2
+        /* feedback pathfollowing gains */
+        val kPDriveVel = 8.5
+
+        /* max speed and acceleration for pathfollowing */
+        val kMaxSpeedMetersPerSecond = 3.0
+        val kMaxAccelerationMetersPerSecondSquared = 3.0
+
+        /* pathfollowing ramsete gains */
+        val kRamseteB = 2.0
+        val kRamseteZeta = 0.7
+
+        /* pathfollowing odeometry */
+        /* width between wheels */
+        val kTrackwidthMeters = 0.69
+        val kDriveKinematics = DifferentialDriveKinematics(kTrackwidthMeters)
 
         val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,

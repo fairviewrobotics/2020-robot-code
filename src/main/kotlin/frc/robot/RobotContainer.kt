@@ -54,8 +54,8 @@ class RobotContainer {
 
 
     val gyro = AHRS()
-    val leftDrivetrainEncoder = Encoder(Constants.leftDrivetrainEncoderPortA, Constants.leftDrivetrainEncoderPortB)
-    val rightDrivetrainencoder = Encoder(Constants.rightDrivetrainEncoderPortA, Constants.rightDrivetrainEncoderPortB)
+    val leftDrivetrainEncoder = Encoder(Constants.leftDrivetrainEncoderPortA, Constants.leftDrivetrainEncoderPortB, Constants.kDrivetrainEncoderAReversed)
+    val rightDrivetrainencoder = Encoder(Constants.rightDrivetrainEncoderPortA, Constants.rightDrivetrainEncoderPortB, Constants.kDrivetrainEncoderBReversed)
 
     val drivetrain = DrivetrainSubsystem(motorsLeft, motorsRight, gyro, leftDrivetrainEncoder, rightDrivetrainencoder)
     val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
@@ -207,7 +207,7 @@ class RobotContainer {
                 ))
         }, {
             /* only run in sensored mode if controller0 left bumper held */
-            controller0.getBumper(kLeft)
+            controller0.getBumper(kLeft) || controller0.xButton
         })
 
         /* default shooter - run forward on y, slowly backwards on a */
@@ -238,43 +238,14 @@ class RobotContainer {
         m_autoCommandChooser.addOption("Forward 4.5s and Shoot", forwardShootAutoNoIntake)
         m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
 
+        // Path Planning auto
+        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #1", pathPlanningCommand("paths/Infinity.wpilib.json", drivetrain))
+        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #2", pathPlanningCommand("paths/Test_Auto.wpilib.json", drivetrain))
+
         SmartDashboard.putData("Auto mode", m_autoCommandChooser)
     }
 
     fun getAutonomousCommand(): Command {
-        /*var autoVoltageConstraint = DifferentialDriveVoltageConstraint(
-            SimpleMotorFeedforward(Constants.chassisksVolts,
-                Constants.kvVoltSecondsPerMeter,
-                Constants.kaVoltSecondsSquaredPerMeter),
-            Constants.kDriveKinematics,
-            10.0)
-
-        val config: TrajectoryConfig = TrajectoryConfig(
-            Constants.kMaxSpeedMetersPerSecond,
-            Constants.kMaxAccelerationMetersPerSecondSquared
-        )
-            .setKinematics(Constants.kDriveKinematics)
-            .addConstraint(autoVoltageConstraint)
-
-        val trajectoryJSON: String = "PathWeaver/Paths/AutoRoute"
-        val trajectoryPath: Path = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON)
-        val trajectory: Trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath)
-
-        val ramseteCommand: RamseteCommand = RamseteCommand(
-            trajectory,
-            drivetrain::getPose,
-            RamseteController(Constants.kRamseteB,Constants.kRamseteZeta),
-            SimpleMotorFeedforward(Constants.chassisksVolts,
-                Constants.kvVoltSecondsPerMeter,
-                Constants.kaVoltSecondsSquaredPerMeter),
-            Constants.kDriveKinematics,
-            drivetrain::getWheelSpeeds,
-            PIDController(Constants.kPDriveVel,0.0,0.0),
-            PIDController(Constants.kPDriveVel,0.0,0.0),
-            drivetrain::tankDriveVolts,
-            arrayOf<Subsystem>(drivetrain)
-        )*/
-
         // Return the selected command
         return m_autoCommandChooser.selected
     }

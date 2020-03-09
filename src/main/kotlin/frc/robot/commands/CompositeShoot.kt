@@ -56,6 +56,8 @@ class CompositeShoot(val intakeSubsystem: IntakeSubsystem, val indexerSubsystem:
     override fun end(interrupted: Boolean) {
         gateSubsystem.setSpeed(0.0)
         shooterSubsystem.setSpeed(0.0)
+        intakeSubsystem.setSpeed(0.0)
+        indexerSubsystem.setSpeed(0.0)
         timer.stop()
         timer.reset()
     }

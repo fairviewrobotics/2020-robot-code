@@ -9,9 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
  * Just a indexer motor
  */
 class IndexerSubsystem(val motor: SpeedController) : SubsystemBase() {
-    /* default command (don't spin) */
     override fun periodic() {
-        motor.set(0.0)
     }
 
     /* set a motor speed */
