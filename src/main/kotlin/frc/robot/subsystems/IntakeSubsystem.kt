@@ -47,7 +47,7 @@ class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) 
         }
 
         motor0.set(internalSpeed)
-        motor1.set(internalSpeed * Constants.kIntake2Dir)
+        motor1.set(internalSpeed * Constants.kIntake2Dir * Constants.kIntake2Speed)
     }
 
     override fun periodic() {
