@@ -64,11 +64,6 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
     override fun periodic() {
         updateOdometry()
         debugStatus()
-        SmartDashboard.putNumber("Left Encoder", leftEncoder.distance)
-        SmartDashboard.putNumber("Right Encoder", rightEncoder.distance)
-        SmartDashboard.putNumber("Pose x", odometry.poseMeters.translation.x)
-        SmartDashboard.putNumber("Pose y", odometry.poseMeters.translation.y)
-        SmartDashboard.putNumber("pose theta", odometry.poseMeters.rotation.degrees)
     }
 
     fun resetGyro() {

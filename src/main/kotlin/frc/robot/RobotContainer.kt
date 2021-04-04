@@ -243,8 +243,8 @@ class RobotContainer {
         m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
 
         // Path Planning auto
-        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #1", pathPlanningCommand("paths/Infinity.wpilib.json", drivetrain))
-        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #2", pathPlanningCommand("paths/Test_Auto.wpilib.json", drivetrain))
+        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #1", pathPlanningCommand("paths/Path1.wpilib.json", drivetrain))
+        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #2", pathPlanningCommand("paths/Path2.wpilib.json", drivetrain))
 
         SmartDashboard.putData("Auto mode", m_autoCommandChooser)
     }
