@@ -86,8 +86,8 @@ class Constants {
         val rightDrivetrainEncoderPortA = 2
         val rightDrivetrainEncoderPortB = 3
 
-        val kDrivetrainEncoderAReversed = true
-        val kDrivetrainEncoderBReversed = true
+        val kDrivetrainEncoderAReversed = false
+        val kDrivetrainEncoderBReversed = false
         /* encoder characteristics */
         val ENCODER_EDGES_PER_REV = 360.0
         val WHEEL_DIAMETER = 0.1524
@@ -95,15 +95,16 @@ class Constants {
         val kGyroReversed = -1.0
 
         /* feedforward pathfollowing gains */
-        val ksVolts = 1.13
-        val kvVoltSecondsPerMeter = 3.22
-        val kaVoltSecondsSquaredPerMeter = 0.299
+        val ksVolts = 1.0
+        val kvVoltSecondsPerMeter = 2.42
+        //val kaVoltSecondsSquaredPerMeter = 0.0000095
+         val kaVoltSecondsSquaredPerMeter = 0.05
         /* feedback pathfollowing gains */
-        val kPDriveVel = 28.2
+        val kPDriveVel = 5.0
 
         /* max speed and acceleration for pathfollowing */
-        val kMaxSpeedMetersPerSecond = 3.0
-        val kMaxAccelerationMetersPerSecondSquared = 3.0
+        val kMaxSpeedMetersPerSecond = 1.0
+        val kMaxAccelerationMetersPerSecondSquared = 1.0
 
         /* pathfollowing ramsete gains */
         val kRamseteB = 2.0

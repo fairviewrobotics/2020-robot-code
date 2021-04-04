@@ -35,8 +35,7 @@ fun pathPlanningCommand(trajectoryJSONPath: String, drivetrain: DrivetrainSubsys
     val trajectoryUntransformed = TrajectoryUtil.fromPathweaverJson(trajectoryPath)
 
 
-
-    val transform = drivetrain.getPose().minus(trajectoryUntransformed.getInitialPose())
+    val transform = Pose2d(0.0, 0.0, Rotation2d(0.0)).minus(trajectoryUntransformed.getInitialPose())
     val trajectory = trajectoryUntransformed.transformBy(transform)
 
     /*val trajectory = TrajectoryGenerator.generateTrajectory(
