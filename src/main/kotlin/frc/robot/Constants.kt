@@ -127,7 +127,8 @@ class Constants {
             "WinchPID_I" to 0.0,
             "WinchPID_D" to 0.005,
             "WinchPID_PositionTolerance" to 1.0,
-            "GateColorSensorThreshold" to 7.0
+            "GateColorSensor_EmptyValue" to 0.0,
+            "GateColorSensor_BallValue" to 50.0
         )
 
         /** NetworkTables Constants Management **/
