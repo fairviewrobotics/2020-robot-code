@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
+import kotlin.math.abs
 
 
 /**
@@ -36,12 +37,18 @@ class GateSubsystem(val motor: SpeedController, val colorSensor: ColorSensorV3) 
     /* check if ball sensor is triggered */
     fun isBallTriggered(): Boolean {
         val IR = colorSensor.getIR()
-        return IR > (Constants.constants["GateColorSensorThreshold"] ?: 7.0) || IR == 0
+        val empty_thresh = Constants.constants["GateColorSensor_EmptyValue"] ?: 0.0
+        val ball_thresh = Constants.constants["GateColorSensor_BallValue"] ?: 50.0
+
+        // report triggered if ir value is closer to ball threshold than empty threshold
+        // (or if ir sensor appears to be malfunctioning)
+        return IR == 0 || (abs(IR - ball_thresh) <= abs(IR - empty_thresh))
     }
 
     /* print status of sensor + its reading */
     fun debugMeasurment() {
-        SmartDashboard.putBoolean("Gate Ball Sensor", colorSensor.getIR() != 0)
+        SmartDashboard.putBoolean("Gate Ball Sensor Status", colorSensor.getIR() != 0)
+        SmartDashboard.putBoolean("Ball Present in Gate", isBallTriggered())
         SmartDashboard.putNumber("Gate Ball Sensor Reading", colorSensor.getIR().toDouble())
     }
 }
