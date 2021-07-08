@@ -63,7 +63,7 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
 
     override fun periodic() {
         updateOdometry()
-        debugStatus() 
+        debugStatus()
     }
 
     fun resetGyro() {

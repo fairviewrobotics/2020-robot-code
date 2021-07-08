@@ -46,6 +46,10 @@ class RobotContainer {
     val motorBackLeft = WPI_TalonSRX(Constants.kDrivetrainBackLeftPort)
     val motorFrontRight = WPI_TalonSRX(Constants.kDrivetrainFrontRightPort)
     val motorBackRight = WPI_TalonSRX(Constants.kDrivetrainBackRightPort)
+    /*val motorFrontLeft = WPI_VictorSPX(Constants.kDrivetrainFrontLeftPort)
+    val motorBackLeft = WPI_VictorSPX(Constants.kDrivetrainBackLeftPort)
+    val motorFrontRight = WPI_VictorSPX(Constants.kDrivetrainFrontRightPort)
+    val motorBackRight = WPI_VictorSPX(Constants.kDrivetrainBackRightPort)*/
 
 
     /* keep speeds same on motors on each side */
@@ -188,7 +192,7 @@ class RobotContainer {
         )
 
         EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) > Constants.kClimberTriggerThresh })).whileActiveOnce(
-            FixedClimbSpeed(climber, { Constants.kClimberSpeed * controller1.getTriggerAxis(kLeft) })
+            FixedClimbSpeed(climber, { Constants.kClimberDownSpeed * controller1.getTriggerAxis(kLeft) })
         )
 
         EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) > Constants.kClimberTriggerThresh })).whileActiveOnce(
@@ -207,7 +211,7 @@ class RobotContainer {
                 ))
         }, {
             /* only run in sensored mode if controller0 left bumper held */
-            controller0.getBumper(kLeft) || controller0.xButton
+            controller0.getBumper(kLeft) || controller1.xButton
         })
 
         /* default shooter - run forward on y, slowly backwards on a */
@@ -239,9 +243,11 @@ class RobotContainer {
         m_autoCommandChooser.addOption("No auto (DON'T PICK)", noAuto)
 
         // Path Planning auto
-        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #1", pathPlanningCommand("paths/Infinity.wpilib.json", drivetrain))
-        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #2", pathPlanningCommand("paths/Test_Auto.wpilib.json", drivetrain))
-
+        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #1", pathPlanningCommand("paths/Path1.wpilib.json", drivetrain))
+        m_autoCommandChooser.addOption("Test Path Planning Loop Auto #2", pathPlanningCommand("paths/Path2.wpilib.json", drivetrain))
+        m_autoCommandChooser.addOption("Barrel", pathPlanningCommand("paths/Barrel.wpilib.json", drivetrain))
+        m_autoCommandChooser.addOption("Slalom", pathPlanningCommand("paths/Slalom.wpilib.json", drivetrain))
+        m_autoCommandChooser.addOption("Bounce", pathPlanningCommand("paths/Bounce.wpilib.json", drivetrain))
         SmartDashboard.putData("Auto mode", m_autoCommandChooser)
     }
 

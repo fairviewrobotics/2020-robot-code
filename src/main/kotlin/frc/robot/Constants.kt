@@ -38,9 +38,11 @@ class Constants {
         val kGateSpeed = 1.0 * kGateDir
         val kGateLoadSpeed = 0.5 * kGateDir
         val kIntakeSpeed = 1.0 * kIntakeDir
+        val kIntake2Speed = 0.85
         val kIndexerSpeed = 0.75 * kIndexerDir
         val kWinchSpeed = 1.0 * kWinchDir
-        val kClimberSpeed = 0.5 * kClimberDir
+        val kClimberSpeed = 0.75 * kClimberDir
+        val kClimberDownSpeed = 0.3 * kClimberDir
 
         val kClimberTriggerThresh = 0.15
         val kTriggerThresh = 0.15
@@ -59,6 +61,10 @@ class Constants {
         val kDrivetrainBackLeftPort = 7
         val kDrivetrainFrontRightPort = 8
         val kDrivetrainBackRightPort = 9
+        /*val kDrivetrainFrontLeftPort = 4
+        val kDrivetrainBackLeftPort = 11
+        val kDrivetrainFrontRightPort = 2
+        val kDrivetrainBackRightPort = 1*/
 
         val kEndgameStart = 120
 
@@ -75,27 +81,30 @@ class Constants {
         /* path following ****UNTUNED**** */
 
         /* encoder ports */
-        val leftDrivetrainEncoderPortA = 1
+        val leftDrivetrainEncoderPortA = 0
+        val leftDrivetrainEncoderPortB = 1
         val rightDrivetrainEncoderPortA = 2
-        val leftDrivetrainEncoderPortB = 3
-        val rightDrivetrainEncoderPortB = 4
+        val rightDrivetrainEncoderPortB = 3
 
         val kDrivetrainEncoderAReversed = false
         val kDrivetrainEncoderBReversed = false
         /* encoder characteristics */
-        val kDrivetrainEncoderDistancePerPulse = 1.0
+        val ENCODER_EDGES_PER_REV = 360.0
+        val WHEEL_DIAMETER = 0.1524
+        val kDrivetrainEncoderDistancePerPulse = (1.0 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI
         val kGyroReversed = -1.0
 
         /* feedforward pathfollowing gains */
-        val ksVolts = 0.22
-        val kvVoltSecondsPerMeter = 1.98
-        val kaVoltSecondsSquaredPerMeter = 0.2
+        val ksVolts = 1.0
+        val kvVoltSecondsPerMeter = 2.42
+        //val kaVoltSecondsSquaredPerMeter = 0.0000095
+         val kaVoltSecondsSquaredPerMeter = 0.05
         /* feedback pathfollowing gains */
-        val kPDriveVel = 8.5
+        val kPDriveVel = 5.0
 
         /* max speed and acceleration for pathfollowing */
-        val kMaxSpeedMetersPerSecond = 3.0
-        val kMaxAccelerationMetersPerSecondSquared = 3.0
+        val kMaxSpeedMetersPerSecond = 1.0
+        val kMaxAccelerationMetersPerSecondSquared = 1.0
 
         /* pathfollowing ramsete gains */
         val kRamseteB = 2.0
@@ -103,7 +112,7 @@ class Constants {
 
         /* pathfollowing odeometry */
         /* width between wheels */
-        val kTrackwidthMeters = 0.69
+        val kTrackwidthMeters = 0.558
         val kDriveKinematics = DifferentialDriveKinematics(kTrackwidthMeters)
 
         val constants = mutableMapOf(
@@ -118,7 +127,8 @@ class Constants {
             "WinchPID_I" to 0.0,
             "WinchPID_D" to 0.005,
             "WinchPID_PositionTolerance" to 1.0,
-            "GateColorSensorThreshold" to 7.0
+            "GateColorSensor_EmptyValue" to 0.0,
+            "GateColorSensor_BallValue" to 50.0
         )
 
         /** NetworkTables Constants Management **/
