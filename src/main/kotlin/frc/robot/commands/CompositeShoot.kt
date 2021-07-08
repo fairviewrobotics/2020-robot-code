@@ -49,7 +49,7 @@ class CompositeShoot(val intakeSubsystem: IntakeSubsystem, val indexerSubsystem:
                 gateSubsystem.setSpeed(0.0)
             }
         } else {
-            gateSubsystem.setSpeed(0.0)
+            gateSubsystem.setSpeed(Constants.kGateRSpeed)
         }
     }
 

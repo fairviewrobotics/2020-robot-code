@@ -36,6 +36,7 @@ class Constants {
         val kShooterSpeed = 1.0 * kShooterDir
         val kShooterReverseSpeed = -0.3 * kShooterDir
         val kGateSpeed = 1.0 * kGateDir
+        val kGateRSpeed = -0.5 * kGateDir
         val kGateLoadSpeed = 0.5 * kGateDir
         val kIntakeSpeed = 1.0 * kIntakeDir
         val kIntake2Speed = 0.85
