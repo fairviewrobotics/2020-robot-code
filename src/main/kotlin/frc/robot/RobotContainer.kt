@@ -174,6 +174,7 @@ class RobotContainer {
 
     fun configureButtonBindings() {
         Constants.loadConstants()
+
         /* Shooting and vision lining up */
         JoystickButton(controller1, kBumperRight.value).whenHeld(
             CompositeShoot(intake, indexer, gate, shooter, 0.0)
@@ -183,30 +184,36 @@ class RobotContainer {
             visionHighGoalLineUp()
         )
 
-        EndgameTrigger().and(JoystickButton(controller1, kA.value)).whileActiveOnce(
+        /* Climbing, including winch */
+        // winch forwards on B. This lowers the robot
+        EndgameTrigger().and(JoystickButton(controller1, kB.value)).whileActiveOnce(
             FixedWinchSpeed(winch, { Constants.kWinchSpeed })
         )
 
+        // winch backwards on Y. This raises the robot
         EndgameTrigger().and(JoystickButton(controller1, kY.value)).whileActiveOnce(
             FixedWinchSpeed(winch, { -Constants.kWinchSpeed })
         )
 
-        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) > Constants.kClimberTriggerThresh })).whileActiveOnce(
-            FixedClimbSpeed(climber, { Constants.kClimberDownSpeed * controller1.getTriggerAxis(kLeft) })
+        // raise climber with right trigger
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) > Constants.kClimberTriggerThresh })).whileActiveOnce(
+                FixedClimbSpeed(climber, { Constants.kClimberSpeed * controller1.getTriggerAxis(kRight) })
         )
 
-        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) > Constants.kClimberTriggerThresh })).whileActiveOnce(
-            FixedClimbSpeed(climber, { -Constants.kClimberSpeed * controller1.getTriggerAxis(kRight) })
+        // lower climber with left trigger
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) > Constants.kClimberTriggerThresh })).whileActiveOnce(
+            FixedClimbSpeed(climber, { -Constants.kClimberDownSpeed * controller1.getTriggerAxis(kLeft) })
         )
+
 
         /* setup default commands */
         drivetrain.defaultCommand = XboxDriveCommand
-        /* default gate - run forward on X, backwards on B
+        /* default gate - run forward on X, backwards on A
          * If left bumper held, run until a ball is seen by the sensor
          */
         gate.defaultCommand = SensoredFixedGateSpeed(gate, {
             if (controller0.xButton) Constants.kGateSpeed else (
-                if (controller0.bButton) -Constants.kGateSpeed else (
+                if (controller0.aButton) -Constants.kGateSpeed else (
                     if (controller0.getBumper(kLeft)) Constants.kGateLoadSpeed else 0.0
                 ))
         }, {
@@ -214,10 +221,10 @@ class RobotContainer {
             controller0.getBumper(kLeft) || controller1.xButton
         })
 
-        /* default shooter - run forward on y, slowly backwards on a */
+        /* default shooter - run forward on Y, slowly backwards on B */
         shooter.defaultCommand = FixedShooterSpeed(shooter, {
             if (controller0.yButton) Constants.kShooterSpeed else (
-                if (controller0.aButton) Constants.kShooterReverseSpeed else 0.0)
+                if (controller0.bButton) Constants.kShooterReverseSpeed else 0.0)
         })
 
         /* default indexer - run forward on left bumper, backwards on left trigger */
