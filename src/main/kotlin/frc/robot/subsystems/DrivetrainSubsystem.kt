@@ -99,4 +99,17 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
         setMaxOutput(1.0)
         drivetrain.arcadeDrive(forwardSpeed, turnSpeed, squareInputs)
     }
+
+    /* drive with a stick setting turn radius rather than speed*/
+    fun driveArcadeSpecial(forwardSpeed: Double, turnRadius: Double, squareInputs: Boolean = false){
+        setMaxOutput(1.0)
+        var xSpeed = turnRadius + (0.5*Constants.kTrackwidthMeters)
+        var ySpeed = turnRadius - (0.5*Constants.kTrackwidthMeters)
+
+        var normMin = min(xSpeed, ySpeed)
+        xSpeed = xSpeed/abs(normMin)
+        ySpeed = ySpeed/abs(normMin)
+
+        drivetrain.tankDrive(xSpeed, ySpeed, squareInputs)
+    }
 }
