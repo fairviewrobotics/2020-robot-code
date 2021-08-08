@@ -253,9 +253,9 @@ class RobotContainer {
 
     fun getAutonomousCommand(): Command {
         if (gate.isBallTriggered()) {
-            return pathPlanningCommand("paths/") // update
+            return pathPlanningCommand("paths/", drivetrain) // update
         } else{
-            return pathPlanningCommand("paths/")
+            return pathPlanningCommand("paths/", drivetrain)
         }
         
 
