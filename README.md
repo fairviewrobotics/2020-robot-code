@@ -2,11 +2,15 @@
 
 Code for FRC 2036 Black Knights' 2020 Infinite Recharge robot.
 
-## Java Requirements
-This project is compatible with Java 11, which is
-not the most recent version of Java. It is 
+## Environment
+This project is most compatible with Java 11, which is
+not the most recent version of Java. 
+
+It is 
 recommended to use [jEnv](https://github.com/jenv/jenv)
-to switch between Java versions.
+to switch between Java versions on Mac OS and Linux.
+I followed [these](https://chamikakasun.medium.com/how-to-manage-multiple-java-version-in-macos-e5421345f6d0)
+instructions to set up jEnv on macOS Big Sur.
 
 ## Building
 
