@@ -209,7 +209,9 @@ class RobotContainer {
         gate.defaultCommand = SensoredFixedGateSpeed(gate, {
             if (controller0.xButton) Constants.kGateSpeed else (
                 if (controller0.bButton) -Constants.kGateSpeed else (
-                    if (controller0.getBumper(kLeft)) Constants.kGateLoadSpeed else 0.0
+                    if (controller0.getBumper(kLeft)) Constants.kGateLoadSpeed else (
+                        if (controller0.getTriggerAxis(kLeft) >= Constants.kTriggerThresh) -Constants.kGateLoadSpeed else 0.0
+                    )
                 ))
         }, {
             /* only run in sensored mode if controller0 left bumper held */
@@ -254,13 +256,6 @@ class RobotContainer {
     }
 
     fun getAutonomousCommand(): Command {
-        if (gate.isBallTriggered()) {
-            return pathPlanningCommand("paths/") // update
-        } else{
-            return pathPlanningCommand("paths/")
-        }
-        
-
         // Return the selected command
         return m_autoCommandChooser.selected
     }
