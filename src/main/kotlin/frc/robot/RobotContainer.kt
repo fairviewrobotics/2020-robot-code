@@ -58,6 +58,7 @@ class RobotContainer {
     val motorsLeft = SpeedControllerGroup(motorFrontLeft, motorBackLeft)
     val motorsRight = SpeedControllerGroup(motorFrontRight, motorBackRight)
 
+    val visionToggle = VisionToggleSubsystem()
 
     val gyro = AHRS()
     val leftDrivetrainEncoder = Encoder(Constants.leftDrivetrainEncoderPortA, Constants.leftDrivetrainEncoderPortB, Constants.kDrivetrainEncoderAReversed)
@@ -65,13 +66,11 @@ class RobotContainer {
 
     val drivetrain = DrivetrainSubsystem(motorsLeft, motorsRight, gyro, leftDrivetrainEncoder, rightDrivetrainencoder)
     val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
-    val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_VictorSPX(Constants.kIntake2Port))
+    val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_VictorSPX(Constants.kIntake2Port), visionToggle)
 
     val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
     val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort), ColorSensorV3(I2C.Port.kOnboard))
     val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
-
-    val visionToggle = VisionToggleSubsystem()
 
     val climber = ClimbSubsystem(WPI_TalonSRX(Constants.kClimberPort))
     val winch = WinchSubsystem(WPI_TalonSRX(Constants.kWinchPort))

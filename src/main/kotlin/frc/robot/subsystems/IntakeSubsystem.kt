@@ -12,7 +12,9 @@ import frc.robot.commands.BallVision
  *
  * Just a intake motor
  */
-class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) : SubsystemBase() {
+class IntakeSubsystem(val motor0: SpeedController,
+                      val motor1: SpeedController,
+                      val visionToggle: VisionToggleSubsystem) : SubsystemBase() {
     /* get a nice speed curve
      * do each speed transition across 20 iterations (400ms)
      */
@@ -29,9 +31,9 @@ class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) 
 
     companion object {
         val ntInst = NetworkTableInstance.getDefault()
-        val table = BallVision.ntInst.getTable("ball-vision")
-        val ballHeight = BallVision.table.getEntry("ballHeight") // the height of the ball
-        val ballFound = BallVision.table.getEntry("ballFound")
+        val table = ntInst.getTable("ball-vision")
+        val ballHeight = table.getEntry("ballHeight") // the height of the ball
+        val ballFound = table.getEntry("ballFound")
     }
 
 
@@ -70,6 +72,8 @@ class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) 
     }
 
     fun getRunningAutomatic(): Boolean {
-        return ballFound.getBoolean(false) && ballHeight.getDouble(0.0) >= Constants.ballHeightForAutoIntake
+        return (visionToggle.visionIntakeOn
+                && ballFound.getBoolean(false)
+                && ballHeight.getDouble(0.0) >= Constants.ballHeightForAutoIntake)
     }
 }
