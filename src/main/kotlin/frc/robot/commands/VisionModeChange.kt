@@ -13,7 +13,7 @@ import frc.robot.subsystems.VisionModes
 import frc.robot.subsystems.VisionToggleSubsystem
 
 class VisionModeChange(val visionToggle: VisionToggleSubsystem,
-                       val mode: () -> VisionModes) : CommandBase() {
+                       val mode: () -> Pair<VisionModes, Boolean>) : CommandBase() {
     /**
      * Creates a new ExampleCommand.
      *
@@ -29,7 +29,9 @@ class VisionModeChange(val visionToggle: VisionToggleSubsystem,
 
     // Called every time the scheduler runs while the command is scheduled.
     override fun execute() {
-        visionToggle.visionMode = mode()
+        val currentMode = mode()
+        visionToggle.visionMode = currentMode.first
+        visionToggle.visionIntakeOn = currentMode.second
     }
 
     // Called once the command ends or is interrupted.

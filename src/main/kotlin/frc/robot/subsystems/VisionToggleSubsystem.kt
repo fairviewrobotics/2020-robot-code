@@ -6,6 +6,7 @@ enum class VisionModes { BALL, HIGHGOAL }
 
 class VisionToggleSubsystem() : SubsystemBase() {
     var visionMode = VisionModes.BALL
+    var visionIntakeOn = true
 
     override fun periodic() {
     }

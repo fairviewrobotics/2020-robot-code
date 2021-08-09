@@ -254,22 +254,32 @@ class RobotContainer {
 
         /* default intake - run forward on right bumper, backwards on right trigger */
         intake.defaultCommand = FixedIntakeSpeed(intake, {
-            if (controller0.getBumper(kRight) || controller1.xButton) Constants.kIntakeSpeed else (
+            if (controller0.getBumper(kRight) || controller1.xButton || intake.getRunningAutomatic()) {
+                Constants.kIntakeSpeed
+            } else (
                 if (controller0.getTriggerAxis(kRight) >= Constants.kTriggerThresh)
-                    controller0.getTriggerAxis(kRight) * -Constants.kIntakeDir else 0.0)
+                    controller0.getTriggerAxis(kRight) * -Constants.kIntakeDir
+                else 0.0)
         })
+
         lights.defaultCommand = setAlliance
 
         /* toggle vision mode when start is pressed on controller0 */
         visionToggle.defaultCommand = VisionModeChange(visionToggle, {
-            if (controller0.getStartButtonPressed()) {
+            val visionMode = {if (controller0.getStartButtonPressed()) {
                 when (visionToggle.visionMode) {
                     VisionModes.BALL -> VisionModes.HIGHGOAL
                     VisionModes.HIGHGOAL -> VisionModes.BALL
                 }
             } else {
                 visionToggle.visionMode
-            }
+            } }
+
+            val autoIntakeOn = {if (controller0.getBackButtonPressed()) {
+                !visionToggle.visionIntakeOn
+            } else visionToggle.visionIntakeOn }
+
+            Pair(visionMode(), autoIntakeOn())
         })
 
         /* set options for autonomous */

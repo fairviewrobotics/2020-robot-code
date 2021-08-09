@@ -117,6 +117,8 @@ class Constants {
         val kTrackwidthMeters = 0.558
         val kDriveKinematics = DifferentialDriveKinematics(kTrackwidthMeters)
 
+        val ballHeightForAutoIntake = 100.0
+
         val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,
             "DrivetrainPID_I" to 0.0,
