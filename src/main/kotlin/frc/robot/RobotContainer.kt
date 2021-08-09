@@ -32,6 +32,8 @@ import frc.robot.triggers.EndgameTrigger
  * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
  * (including subsystems, commands, and button mappings) should be declared here.
  */
+
+
 class RobotContainer {
     val sch = CommandScheduler.getInstance()
     var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
@@ -68,6 +70,8 @@ class RobotContainer {
     val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
     val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort), ColorSensorV3(I2C.Port.kOnboard))
     val lights = LEDSubsystem(AddressableLED(Constants.kLED0Port), 60, DriverStation.getInstance())
+
+    val visionToggle = VisionToggleSubsystem()
 
     val climber = ClimbSubsystem(WPI_TalonSRX(Constants.kClimberPort))
     val winch = WinchSubsystem(WPI_TalonSRX(Constants.kWinchPort))
@@ -130,6 +134,20 @@ class RobotContainer {
         )
     }
 
+    val visionBallLineup = {
+        SequentialCommandGroup(
+            BallVision(drivetrain, 0.0),
+            DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(0.5)
+        )
+    }
+
+    val visionLineup: () -> SequentialCommandGroup = {
+        when (visionToggle.visionMode) {
+            VisionModes.HIGHGOAL -> visionHighGoalLineUp()
+            VisionModes.BALL -> visionBallLineup()
+        }
+    }
+
     val forwardShootAutoNoIntake = SequentialCommandGroup(
         ParallelCommandGroup(
             SequentialCommandGroup(
@@ -181,7 +199,7 @@ class RobotContainer {
         )
 
         JoystickButton(controller1, kBumperLeft.value).whenHeld(
-            visionHighGoalLineUp()
+            visionLineup()
         )
 
         /* Climbing, including winch */
@@ -241,6 +259,18 @@ class RobotContainer {
                     controller0.getTriggerAxis(kRight) * -Constants.kIntakeDir else 0.0)
         })
         lights.defaultCommand = setAlliance
+
+        /* toggle vision mode when start is pressed on controller0 */
+        visionToggle.defaultCommand = VisionModeChange(visionToggle, {
+            if (controller0.getStartButtonPressed()) {
+                when (visionToggle.visionMode) {
+                    VisionModes.BALL -> VisionModes.HIGHGOAL
+                    VisionModes.HIGHGOAL -> VisionModes.BALL
+                }
+            } else {
+                visionToggle.visionMode
+            }
+        })
 
         /* set options for autonomous */
         m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionAuto())
