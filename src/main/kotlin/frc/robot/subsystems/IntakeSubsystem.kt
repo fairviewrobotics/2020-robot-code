@@ -31,6 +31,7 @@ class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) 
         val ntInst = NetworkTableInstance.getDefault()
         val table = BallVision.ntInst.getTable("ball-vision")
         val ballHeight = BallVision.table.getEntry("ballHeight") // the height of the ball
+        val ballFound = BallVision.table.getEntry("ballFound")
     }
 
 
@@ -69,6 +70,6 @@ class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) 
     }
 
     fun getRunningAutomatic(): Boolean {
-        return ballHeight.getDouble(0.0) >= Constants.ballHeightForAutoIntake
+        return ballFound.getBoolean(false) && ballHeight.getDouble(0.0) >= Constants.ballHeightForAutoIntake
     }
 }
