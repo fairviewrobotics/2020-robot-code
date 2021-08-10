@@ -276,13 +276,18 @@ class RobotContainer {
         lights.defaultCommand = setAlliance
 
         /* toggle vision mode with D-Pad (pov) and toggle
-         auto intake with start and back on controller0 */
+         auto intake with start and back on controller0.
+          controller1 can also change vision mode */
         visionToggle.defaultCommand = VisionModeChange(visionToggle) {
             val visionMode = {
-                when (controller0.pov) {
+                when (controller1.pov) {
                     90 -> VisionModes.HIGHGOAL // right
                     270 -> VisionModes.BALL // left
-                    else -> visionToggle.visionMode
+                    else -> when (controller0.pov) {
+                        90 -> VisionModes.HIGHGOAL // right
+                        270 -> VisionModes.BALL // left
+                        else -> visionToggle.visionMode
+                    }
                 }
             }
 
