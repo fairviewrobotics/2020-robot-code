@@ -120,6 +120,10 @@ class Constants {
         val kballHeightForAutoIntake = 0.33 // a third of the screen
         val kBallAreaThreshold = 0.1
 
+        val kDriveToggleHoldTime = 5 // seconds to hold button to change drive mode
+        val kDriveModeChangeRumbleTime = 1
+        val kDriveModeChangingOn = true // turn this off to prevent changing
+
         val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,
             "DrivetrainPID_I" to 0.0,

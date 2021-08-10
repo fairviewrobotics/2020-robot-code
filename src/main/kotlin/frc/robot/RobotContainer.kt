@@ -77,7 +77,10 @@ class RobotContainer {
     /*** --- commands --- ***/
     //drive by a joystick (controller1)
     val XboxDriveCommand = XboxDrive(drivetrain, controller1)
-    val XboxDriveSpecial = XboxDrive(drivetrain, controller1)
+    val XboxDriveSpecial = XboxDriveSpecial(drivetrain, controller1)
+    val driveModeToggle = DriveModeToggleSubsystem(drivetrain, controller1,
+            listOf(XboxDriveCommand, XboxDriveSpecial), 0
+    )
 
     /** -- 0 point autos -- **/
     val noAuto = DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.0 })
@@ -227,7 +230,11 @@ class RobotContainer {
         /* setup default commands */
         drivetrain.defaultCommand = XboxDriveCommand
         //drivetrain.defaultCommand = XboxDriveSpecial
-      
+        driveModeToggle.defaultCommand = ChangeDriveMode(driveModeToggle) {
+            Constants.kDriveModeChangingOn && controller1.aButton
+        }
+
+
         /* default gate - run forward on X, backwards on A
          * If left bumper held, run until a ball is seen by the sensor
          */
