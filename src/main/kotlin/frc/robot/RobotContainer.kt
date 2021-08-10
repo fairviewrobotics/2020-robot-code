@@ -32,6 +32,8 @@ import frc.robot.triggers.EndgameTrigger
  * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
  * (including subsystems, commands, and button mappings) should be declared here.
  */
+
+
 class RobotContainer {
     val sch = CommandScheduler.getInstance()
     var m_autoCommandChooser: SendableChooser<Command> = SendableChooser()
@@ -56,6 +58,7 @@ class RobotContainer {
     val motorsLeft = SpeedControllerGroup(motorFrontLeft, motorBackLeft)
     val motorsRight = SpeedControllerGroup(motorFrontRight, motorBackRight)
 
+    val visionToggle = VisionToggleSubsystem()
 
     val gyro = AHRS()
     val leftDrivetrainEncoder = Encoder(Constants.leftDrivetrainEncoderPortA, Constants.leftDrivetrainEncoderPortB, Constants.kDrivetrainEncoderAReversed)
@@ -63,7 +66,7 @@ class RobotContainer {
 
     val drivetrain = DrivetrainSubsystem(motorsLeft, motorsRight, gyro, leftDrivetrainEncoder, rightDrivetrainencoder)
     val shooter = ShooterSubsystem(CANSparkMax(Constants.kShooterPort, MotorType.kBrushless))
-    val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_VictorSPX(Constants.kIntake2Port))
+    val intake = IntakeSubsystem(WPI_TalonSRX(Constants.kIntakePort), WPI_VictorSPX(Constants.kIntake2Port), visionToggle)
 
     val indexer = IndexerSubsystem(WPI_TalonSRX(Constants.kIndexerPort))
     val gate = GateSubsystem(WPI_TalonSRX(Constants.kGatePort), ColorSensorV3(I2C.Port.kOnboard))
@@ -131,6 +134,20 @@ class RobotContainer {
         )
     }
 
+    val visionBallLineup = {
+        SequentialCommandGroup(
+            BallVision(drivetrain, 0.0),
+            DriveDoubleSupplier(drivetrain, { 0.3 }, { 0.0 }).withTimeout(0.5)
+        )
+    }
+
+    val visionLineup: () -> SequentialCommandGroup = {
+        when (visionToggle.visionMode) {
+            VisionModes.HIGHGOAL -> visionHighGoalLineUp()
+            VisionModes.BALL -> visionBallLineup()
+        }
+    }
+
     val forwardShootAutoNoIntake = SequentialCommandGroup(
         ParallelCommandGroup(
             SequentialCommandGroup(
@@ -175,40 +192,48 @@ class RobotContainer {
 
     fun configureButtonBindings() {
         Constants.loadConstants()
+
         /* Shooting and vision lining up */
         JoystickButton(controller1, kBumperRight.value).whenHeld(
             CompositeShoot(intake, indexer, gate, shooter, 0.0)
         )
 
         JoystickButton(controller1, kBumperLeft.value).whenHeld(
-            visionHighGoalLineUp()
+            visionLineup()
         )
 
-        EndgameTrigger().and(JoystickButton(controller1, kA.value)).whileActiveOnce(
+        /* Climbing, including winch */
+        // winch forwards on B. This lowers the robot
+        EndgameTrigger().and(JoystickButton(controller1, kB.value)).whileActiveOnce(
             FixedWinchSpeed(winch, { Constants.kWinchSpeed })
         )
 
+        // winch backwards on Y. This raises the robot
         EndgameTrigger().and(JoystickButton(controller1, kY.value)).whileActiveOnce(
             FixedWinchSpeed(winch, { -Constants.kWinchSpeed })
         )
 
-        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) > Constants.kClimberTriggerThresh })).whileActiveOnce(
-            FixedClimbSpeed(climber, { Constants.kClimberDownSpeed * controller1.getTriggerAxis(kLeft) })
+        // raise climber with right trigger
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) > Constants.kClimberTriggerThresh })).whileActiveOnce(
+                FixedClimbSpeed(climber, { Constants.kClimberSpeed * controller1.getTriggerAxis(kRight) })
         )
 
-        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kRight) > Constants.kClimberTriggerThresh })).whileActiveOnce(
-            FixedClimbSpeed(climber, { -Constants.kClimberSpeed * controller1.getTriggerAxis(kRight) })
+        // lower climber with left trigger
+        EndgameTrigger().and(Trigger({ controller1.getTriggerAxis(kLeft) > Constants.kClimberTriggerThresh })).whileActiveOnce(
+            FixedClimbSpeed(climber, { -Constants.kClimberDownSpeed * controller1.getTriggerAxis(kLeft) })
         )
+
 
         /* setup default commands */
-        //drivetrain.defaultCommand = XboxDriveCommand
-        drivetrain.defaultCommand = XboxDriveSpecial
-        /* default gate - run forward on X, backwards on B
+        drivetrain.defaultCommand = XboxDriveCommand
+        //drivetrain.defaultCommand = XboxDriveSpecial
+      
+        /* default gate - run forward on X, backwards on A
          * If left bumper held, run until a ball is seen by the sensor
          */
         gate.defaultCommand = SensoredFixedGateSpeed(gate, {
             if (controller0.xButton) Constants.kGateSpeed else (
-                if (controller0.bButton) -Constants.kGateSpeed else (
+                if (controller0.aButton) -Constants.kGateSpeed else (
                     if (controller0.getBumper(kLeft)) Constants.kGateLoadSpeed else (
                         if (controller0.getTriggerAxis(kLeft) >= Constants.kTriggerThresh) -Constants.kGateLoadSpeed else 0.0
                     )
@@ -218,10 +243,10 @@ class RobotContainer {
             controller0.getBumper(kLeft) || controller1.xButton
         })
 
-        /* default shooter - run forward on y, slowly backwards on a */
+        /* default shooter - run forward on Y, slowly backwards on B */
         shooter.defaultCommand = FixedShooterSpeed(shooter, {
             if (controller0.yButton) Constants.kShooterSpeed else (
-                if (controller0.aButton) Constants.kShooterReverseSpeed else 0.0)
+                if (controller0.bButton) Constants.kShooterReverseSpeed else 0.0)
         })
 
         /* default indexer - run forward on left bumper, backwards on left trigger */
@@ -233,11 +258,33 @@ class RobotContainer {
 
         /* default intake - run forward on right bumper, backwards on right trigger */
         intake.defaultCommand = FixedIntakeSpeed(intake, {
-            if (controller0.getBumper(kRight) || controller1.xButton) Constants.kIntakeSpeed else (
+            if (controller0.getBumper(kRight) || controller1.xButton || intake.getRunningAutomatic()) {
+                Constants.kIntakeSpeed
+            } else (
                 if (controller0.getTriggerAxis(kRight) >= Constants.kTriggerThresh)
-                    controller0.getTriggerAxis(kRight) * -Constants.kIntakeDir else 0.0)
+                    controller0.getTriggerAxis(kRight) * -Constants.kIntakeDir
+                else 0.0)
         })
+
         lights.defaultCommand = setAlliance
+
+        /* toggle vision mode when start is pressed on controller0 */
+        visionToggle.defaultCommand = VisionModeChange(visionToggle, {
+            val visionMode = {if (controller0.getStartButtonPressed()) {
+                when (visionToggle.visionMode) {
+                    VisionModes.BALL -> VisionModes.HIGHGOAL
+                    VisionModes.HIGHGOAL -> VisionModes.BALL
+                }
+            } else {
+                visionToggle.visionMode
+            } }
+
+            val autoIntakeOn = {if (controller0.getBackButtonPressed()) {
+                !visionToggle.visionIntakeOn
+            } else visionToggle.visionIntakeOn }
+
+            Pair(visionMode(), autoIntakeOn())
+        })
 
         /* set options for autonomous */
         m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionAuto())

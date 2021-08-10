@@ -17,7 +17,7 @@ import kotlin.math.abs
 class GateSubsystem(val motor: SpeedController, val colorSensor: ColorSensorV3) : SubsystemBase() {
 
     override fun periodic() {
-        debugMeasurment()
+        debugMeasurement()
     }
 
     /* set a motor speed, no matter if a ball is in the gate or not */
@@ -46,7 +46,7 @@ class GateSubsystem(val motor: SpeedController, val colorSensor: ColorSensorV3) 
     }
 
     /* print status of sensor + its reading */
-    fun debugMeasurment() {
+    fun debugMeasurement() {
         SmartDashboard.putBoolean("Gate Ball Sensor Status", colorSensor.getIR() != 0)
         SmartDashboard.putBoolean("Ball Present in Gate", isBallTriggered())
         SmartDashboard.putNumber("Gate Ball Sensor Reading", colorSensor.getIR().toDouble())

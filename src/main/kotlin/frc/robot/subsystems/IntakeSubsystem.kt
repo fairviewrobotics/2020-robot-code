@@ -1,15 +1,20 @@
 package frc.robot.subsystems
 
+import edu.wpi.first.networktables.NetworkTable
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.SpeedController
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.Constants
+import frc.robot.commands.BallVision
 
 /**
  * Intake Subsystem
  *
  * Just a intake motor
  */
-class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) : SubsystemBase() {
+class IntakeSubsystem(val motor0: SpeedController,
+                      val motor1: SpeedController,
+                      val visionToggle: VisionToggleSubsystem) : SubsystemBase() {
     /* get a nice speed curve
      * do each speed transition across 20 iterations (400ms)
      */
@@ -23,6 +28,13 @@ class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) 
     val curveLen = 30
 
     var internalSpeed = 0.0
+
+    companion object {
+        val ntInst = NetworkTableInstance.getDefault()
+        val table = ntInst.getTable("ball-vision")
+        val ballHeight = table.getEntry("ballHeight") // the height of the ball
+        val ballFound = table.getEntry("ballFound")
+    }
 
 
     private fun setTargetSpeed(target: Double) {
@@ -57,5 +69,11 @@ class IntakeSubsystem(val motor0: SpeedController, val motor1: SpeedController) 
     /* set a motor speed */
     fun setSpeed(speed: Double) {
         setTargetSpeed(speed)
+    }
+
+    fun getRunningAutomatic(): Boolean {
+        return (visionToggle.visionIntakeOn
+                && ballFound.getBoolean(false)
+                && ballHeight.getDouble(0.0) >= Constants.ballHeightForAutoIntake)
     }
 }
