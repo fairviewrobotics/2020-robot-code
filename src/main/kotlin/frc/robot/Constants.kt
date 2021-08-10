@@ -117,7 +117,8 @@ class Constants {
         val kTrackwidthMeters = 0.558
         val kDriveKinematics = DifferentialDriveKinematics(kTrackwidthMeters)
 
-        val ballHeightForAutoIntake = 100.0
+        val kballHeightForAutoIntake = 0.33 // a third of the screen
+        val kBallAreaThreshold = 0.1
 
         val constants = mutableMapOf(
             "DrivetrainPID_P" to 0.035,
