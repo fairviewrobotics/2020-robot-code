@@ -10,6 +10,11 @@ import java.lang.IndexOutOfBoundsException
 import java.util.*
 import kotlin.concurrent.schedule
 
+/**
+ * Subsystem to handle changing the command used to drive the robot.
+ * This is intended to test the commands, not for use in real matches.
+ */
+
 class DriveModeToggleSubsystem(private val drivetrain: DrivetrainSubsystem,
                                private val controller1: XboxController,
                                private val driveModes: List<CommandBase>,

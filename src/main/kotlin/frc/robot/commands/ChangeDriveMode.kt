@@ -15,10 +15,13 @@ import java.time.LocalTime
 class ChangeDriveMode(val driveToggle: DriveModeToggleSubsystem,
                        val activating: () -> Boolean) : CommandBase() {
     /**
-     * Creates a new ExampleCommand.
+     * Creates a new ChangeDriveMode command.
      *
-     * @param m_subsystem The subsystem used by this command.
+     * @param driveToggle The subsystem used by this command.
+     * @param activating The function to call to determine if the driver
+     *   is trying to change the mode.
      */
+
     init {
         addRequirements(driveToggle)
     }

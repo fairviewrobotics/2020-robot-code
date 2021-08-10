@@ -15,9 +15,10 @@ import frc.robot.subsystems.VisionToggleSubsystem
 class VisionModeChange(val visionToggle: VisionToggleSubsystem,
                        val mode: () -> Pair<VisionModes, Boolean>) : CommandBase() {
     /**
-     * Creates a new ExampleCommand.
+     * Creates a new VisionModeChange command.
      *
-     * @param m_subsystem The subsystem used by this command.
+     * @param visionToggle The subsystem used by this command.
+     * @param mode The function to get the vision mode and automatic intake state as a pair
      */
     init {
         addRequirements(visionToggle)
