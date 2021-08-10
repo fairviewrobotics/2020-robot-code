@@ -268,23 +268,27 @@ class RobotContainer {
 
         lights.defaultCommand = setAlliance
 
-        /* toggle vision mode when start is pressed on controller0 */
-        visionToggle.defaultCommand = VisionModeChange(visionToggle, {
-            val visionMode = {if (controller0.getStartButtonPressed()) {
-                when (visionToggle.visionMode) {
-                    VisionModes.BALL -> VisionModes.HIGHGOAL
-                    VisionModes.HIGHGOAL -> VisionModes.BALL
+        /* toggle vision mode with D-Pad (pov) and toggle
+         auto intake with start and back on controller0 */
+        visionToggle.defaultCommand = VisionModeChange(visionToggle) {
+            val visionMode = {
+                when (controller0.pov) {
+                    90 -> VisionModes.HIGHGOAL // right
+                    270 -> VisionModes.BALL // left
+                    else -> visionToggle.visionMode
                 }
-            } else {
-                visionToggle.visionMode
-            } }
+            }
 
-            val autoIntakeOn = {if (controller0.getBackButtonPressed()) {
-                !visionToggle.visionIntakeOn
-            } else visionToggle.visionIntakeOn }
+            val autoIntakeOn = {
+                when {
+                    controller0.startButtonPressed -> true
+                    controller0.backButtonPressed -> false
+                    else -> visionToggle.visionIntakeOn
+                }
+            }
 
             Pair(visionMode(), autoIntakeOn())
-        })
+        }
 
         /* set options for autonomous */
         m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionAuto())
