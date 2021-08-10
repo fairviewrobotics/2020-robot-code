@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import frc.robot.Constants
 import kotlin.math.IEEErem
+import kotlin.math.abs
+import kotlin.math.min
 
 /**
  * Drivetrain subsystem
@@ -98,5 +100,18 @@ class DrivetrainSubsystem(val leftSpeedController: SpeedControllerGroup, val rig
     fun driveArcade(forwardSpeed: Double, turnSpeed: Double, squareInputs: Boolean = false) {
         setMaxOutput(1.0)
         drivetrain.arcadeDrive(forwardSpeed, turnSpeed, squareInputs)
+    }
+
+    /* drive with a stick setting turn radius rather than speed*/
+    fun driveArcadeSpecial(forwardSpeed: Double, turnRadius: Double, squareInputs: Boolean = false){
+        setMaxOutput(1.0)
+        var xSpeed = turnRadius + (0.5*Constants.kTrackwidthMeters)
+        var ySpeed = turnRadius - (0.5*Constants.kTrackwidthMeters)
+
+        var normMin = min(xSpeed, ySpeed)
+        xSpeed = xSpeed/abs(normMin)
+        ySpeed = ySpeed/abs(normMin)
+
+        drivetrain.tankDrive(xSpeed, ySpeed, squareInputs)
     }
 }
