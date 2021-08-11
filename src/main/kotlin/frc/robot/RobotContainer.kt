@@ -77,7 +77,10 @@ class RobotContainer {
     /*** --- commands --- ***/
     //drive by a joystick (controller1)
     val XboxDriveCommand = XboxDrive(drivetrain, controller1)
-    val XboxDriveSpecial = XboxDrive(drivetrain, controller1)
+    val XboxDriveSpecial = XboxDriveSpecial(drivetrain, controller1)
+    val driveModeToggle = DriveModeToggleSubsystem(drivetrain, controller1,
+            listOf(XboxDriveCommand, XboxDriveSpecial), 0
+    )
 
     /** -- 0 point autos -- **/
     val noAuto = DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.0 })
@@ -227,7 +230,11 @@ class RobotContainer {
         /* setup default commands */
         drivetrain.defaultCommand = XboxDriveCommand
         //drivetrain.defaultCommand = XboxDriveSpecial
-      
+        driveModeToggle.defaultCommand = ChangeDriveMode(driveModeToggle) {
+            Constants.kDriveModeChangingOn && controller1.aButton
+        }
+
+
         /* default gate - run forward on X, backwards on A
          * If left bumper held, run until a ball is seen by the sensor
          */
@@ -268,23 +275,32 @@ class RobotContainer {
 
         lights.defaultCommand = setAlliance
 
-        /* toggle vision mode when start is pressed on controller0 */
-        visionToggle.defaultCommand = VisionModeChange(visionToggle, {
-            val visionMode = {if (controller0.getStartButtonPressed()) {
-                when (visionToggle.visionMode) {
-                    VisionModes.BALL -> VisionModes.HIGHGOAL
-                    VisionModes.HIGHGOAL -> VisionModes.BALL
+        /* toggle vision mode with D-Pad (pov) and toggle
+         auto intake with start and back on controller0.
+          controller1 can also change vision mode */
+        visionToggle.defaultCommand = VisionModeChange(visionToggle) {
+            val visionMode = {
+                when (controller1.pov) {
+                    90 -> VisionModes.HIGHGOAL // right
+                    270 -> VisionModes.BALL // left
+                    else -> when (controller0.pov) {
+                        90 -> VisionModes.HIGHGOAL // right
+                        270 -> VisionModes.BALL // left
+                        else -> visionToggle.visionMode
+                    }
                 }
-            } else {
-                visionToggle.visionMode
-            } }
+            }
 
-            val autoIntakeOn = {if (controller0.getBackButtonPressed()) {
-                !visionToggle.visionIntakeOn
-            } else visionToggle.visionIntakeOn }
+            val autoIntakeOn = {
+                when {
+                    controller0.startButtonPressed -> true
+                    controller0.backButtonPressed -> false
+                    else -> visionToggle.visionIntakeOn
+                }
+            }
 
             Pair(visionMode(), autoIntakeOn())
-        })
+        }
 
         /* set options for autonomous */
         m_autoCommandChooser.setDefaultOption("Power Port Vision Autonomous", visionAuto())
