@@ -13,9 +13,9 @@ I followed [these](https://chamikakasun.medium.com/how-to-manage-multiple-java-v
 instructions to set up jEnv on macOS Big Sur.
 
 ## Installing the JVM (Ubuntu/Debian based systems)
-    -	`sudo apt install -y openjdk-11-jdk` - install the JVM
-    -	`echo export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64 >> ~/.bashrc` - Make sure Gradle knows where your Java installation is
-    -	`source ~/.bashrc` - Update your terminal
+-	`sudo apt install -y openjdk-11-jdk` - install the JVM
+-	`echo export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64 >> ~/.bashrc` - Make sure Gradle knows where your Java installation is
+-	`source ~/.bashrc` - Update your terminal
 
 ## Building
 
