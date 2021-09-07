@@ -12,6 +12,11 @@ to switch between Java versions on Mac OS and Linux.
 I followed [these](https://chamikakasun.medium.com/how-to-manage-multiple-java-version-in-macos-e5421345f6d0)
 instructions to set up jEnv on macOS Big Sur.
 
+## Installing the JVM (Ubuntu/Debian based systems)
+    -	`sudo apt install -y openjdk-11-jdk` - install the JVM
+    -	`echo export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64 >> ~/.bashrc` - Make sure Gradle knows where your Java installation is
+    -	`source ~/.bashrc` - Update your terminal
+
 ## Building
 
 This project uses gradle as its build system. The GradleRIO plugin provides a wide number of FRC specific gradle commands (see [here](https://github.com/wpilibsuite/GradleRIO) for details).
