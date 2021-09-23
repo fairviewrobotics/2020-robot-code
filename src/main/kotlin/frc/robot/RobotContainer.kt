@@ -77,10 +77,6 @@ class RobotContainer {
     /*** --- commands --- ***/
     //drive by a joystick (controller1)
     val XboxDriveCommand = XboxDrive(drivetrain, controller1)
-    val XboxDriveSpecial = XboxDriveSpecial(drivetrain, controller1)
-    val driveModeToggle = DriveModeToggleSubsystem(drivetrain, controller1,
-            listOf(XboxDriveCommand, XboxDriveSpecial), 0
-    )
 
     /** -- 0 point autos -- **/
     val noAuto = DriveDoubleSupplier(drivetrain, { 0.0 }, { 0.0 })
@@ -206,14 +202,22 @@ class RobotContainer {
         )
 
         /* Climbing, including winch */
-        // winch forwards on B. This lowers the robot
+        // winch backwards on B. This lowers the robot
         EndgameTrigger().and(JoystickButton(controller1, kB.value)).whileActiveOnce(
-            FixedWinchSpeed(winch, { Constants.kWinchSpeed })
+            FixedWinchSpeed(winch, { 
+                if(controller0.pov == 180) {
+                  -Constants.kWinchSpeed 
+                } else {
+                  0.0
+                }
+            })
         )
 
-        // winch backwards on Y. This raises the robot
+        // winch forwards on Y. This raises the robot
         EndgameTrigger().and(JoystickButton(controller1, kY.value)).whileActiveOnce(
-            FixedWinchSpeed(winch, { -Constants.kWinchSpeed })
+            FixedWinchSpeed(winch, {
+                Constants.kWinchSpeed
+            })
         )
 
         // raise climber with right trigger
@@ -229,11 +233,6 @@ class RobotContainer {
 
         /* setup default commands */
         drivetrain.defaultCommand = XboxDriveCommand
-        //drivetrain.defaultCommand = XboxDriveSpecial
-        driveModeToggle.defaultCommand = ChangeDriveMode(driveModeToggle) {
-            Constants.kDriveModeChangingOn && controller1.aButton
-        }
-
 
         /* default gate - run forward on X, backwards on A
          * If left bumper held, run until a ball is seen by the sensor
@@ -265,7 +264,7 @@ class RobotContainer {
 
         /* default intake - run forward on right bumper, backwards on right trigger */
         intake.defaultCommand = FixedIntakeSpeed(intake, {
-            if (controller0.getBumper(kRight) || controller1.xButton || intake.getRunningAutomatic()) {
+            if (controller0.getBumper(kRight) || controller1.xButton) {
                 Constants.kIntakeSpeed
             } else (
                 if (controller0.getTriggerAxis(kRight) >= Constants.kTriggerThresh)

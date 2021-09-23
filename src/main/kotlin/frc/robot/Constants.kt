@@ -76,9 +76,10 @@ class Constants {
         val kAutoBackupTime = 1.0
 
         /* time for shooter to speed up */
-        val kShooterSpinUpTime = 0.5
+        val kShooterSpinUpTime = 1.0
         /* wavelength of gate pulsing */
-        val kGatePulseTime = 0.2
+        val kGatePulseTime = 0.4
+	val kGatePulseWidth = 0.44
 
         /* path following ****UNTUNED**** */
 

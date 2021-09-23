@@ -43,7 +43,7 @@ class CompositeShoot(val intakeSubsystem: IntakeSubsystem, val indexerSubsystem:
         if (timer.get() > Constants.kShooterSpinUpTime) {
             shooterSubsystem.setSpeed(Constants.kShooterSpeed)
             /* pulse gate to slow down balls going into shooter */
-            if (timer.get() % Constants.kGatePulseTime < Constants.kGatePulseTime / 2) {
+            if (timer.get() % Constants.kGatePulseTime < (Constants.kGatePulseTime * Constants.kGatePulseWidth)) {
                 gateSubsystem.setSpeed(Constants.kGateSpeed)
             } else {
                 gateSubsystem.setSpeed(0.0)
