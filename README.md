@@ -21,10 +21,15 @@ instructions to set up jEnv on macOS Big Sur.
 
 This project uses gradle as its build system. The GradleRIO plugin provides a wide number of FRC specific gradle commands (see [here](https://github.com/wpilibsuite/GradleRIO) for details).
 
-The major commands are:
+The major commands (for macOS and Linux) are:
 -	`./gradlew build` - build the project
 -	`./gradlew deploy` - deploy code to the robot (or `./gradlew build deploy` to do both)
 -	`./gradlew riolog` - display the rio log output
+
+The major commands (for Windows) are:
+-	`./gradlew.bat build` - build the project
+-	`./gradlew.bat deploy` - deploy code to the robot (or `./gradlew.bat build deploy` to do both)
+-	`./gradlew.bat riolog` - display the rio log output
 
 Deploying and displaying the log require your computer to be connected to the robot (tethered over ethernet or connected to the robot's radio).
 
