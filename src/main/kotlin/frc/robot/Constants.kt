@@ -30,7 +30,7 @@ class Constants {
         val kIntakeDir = 1.0
         val kIntake2Dir = -1.0
         val kIndexerDir = 1.0
-        val kWinchDir = 1.0
+        val kWinchDir = -1.0
         val kClimberDir = 1.0
 
         val kShooterSpeed = 1.0 * kShooterDir
