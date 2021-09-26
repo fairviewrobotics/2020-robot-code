@@ -17,6 +17,14 @@ instructions to set up jEnv on macOS Big Sur.
 -	`echo export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64 >> ~/.bashrc` - Make sure Gradle knows where your Java installation is
 -	`source ~/.bashrc` - Update your terminal
 
+## Installing the JVM (Windows 10)
+
+Note: You must create an Oracle account in order to download Java.
+
+-	Go to the Java 11 download page [here](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html)
+-	Install the file once it has finished downloading and restart your computer
+-	Download the file marked as the Windows x64 Installer for the JAVA SE Development Kit 10.11.11
+
 ## Building
 
 This project uses gradle as its build system. The GradleRIO plugin provides a wide number of FRC specific gradle commands (see [here](https://github.com/wpilibsuite/GradleRIO) for details).
