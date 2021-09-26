@@ -201,6 +201,10 @@ class RobotContainer {
             visionLineup()
         )
 
+       JoystickButton(controller0, kBack.value).whenHeld(
+            GiggleDriveCommand(drivetrain)
+       )
+
         /* Climbing, including winch */
         // winch backwards on B. This lowers the robot
         EndgameTrigger().and(JoystickButton(controller1, kB.value)).whileActiveOnce(
